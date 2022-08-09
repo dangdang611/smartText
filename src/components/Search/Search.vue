@@ -30,9 +30,9 @@
         <i></i>
         今日热搜：
         <ul>
-          <li>父亲节主题海报</li>
-          <li>F1加拿大站排位赛</li>
-          <li>内地新增本土确诊5例</li>
+          <li v-for="top in topSearch" :key="top.id">
+            {{ top.title }}
+          </li>
         </ul>
       </div>
     </div>
@@ -50,6 +50,19 @@ const state = ref("");
 interface LinkItem {
   value: string;
   newsId: string;
+}
+interface topItem {
+  title: string;
+  id: string;
+}
+
+let timer: NodeJS.Timeout;
+let topSearch = ref<topItem[]>([]);
+async function refreshTop() {
+  let result = await Api.article.getArticle("/get_hotRank", null, 0, 3);
+  if (result.code == 200) {
+    topSearch.value = result.data;
+  }
 }
 
 const links = ref<LinkItem[]>([]);
@@ -96,7 +109,16 @@ watch(state, () => {
 });
 
 onMounted(() => {
+  refreshTop();
+  timer = setInterval(() => {
+    refreshTop();
+  }, 60 * 10000);
   loadAll(state.value);
+});
+
+onUnmounted(() => {
+  // 清除定时器
+  clearInterval(timeout);
 });
 </script>
 

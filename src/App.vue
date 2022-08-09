@@ -19,7 +19,7 @@
 import Api from "./Api";
 import Header from "./components/Header/Header.vue";
 
-let isLogin = ref(false); 
+let isLogin = ref(false);
 
 let isRegister = ref(false);
 

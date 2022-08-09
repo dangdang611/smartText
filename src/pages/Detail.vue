@@ -3,19 +3,14 @@
     <div class="detailContent">
       <h2>{{ data.info.title }}</h2>
       <div class="infoMessage">
-        <span
-          class="infoTag"
-          v-for="(tag, index) in data.info.tag"
-          :key="index"
-          >{{ tag }}</span
-        >
-        <span>{{ data.info.time }}</span
-        ><span>{{ data.info.author }}</span>
+        <span class="infoTag">{{ data.info.tag }}</span>
+        <span>{{ data.info.createTime }}</span
+        ><span>{{ data.info.authorName }}</span>
       </div>
       <div class="paragrah">
         <mavon-editor
           class="md"
-          v-model="data.info.newsContext"
+          v-model="data.info.content"
           :editable="false"
           :toolbarsFlag="false"
           :shortCut="false"
@@ -27,7 +22,7 @@
   </div>
   <div class="tools">
     <ul>
-      <li @click="isLike = !isLike" :class="isLike ? 'like' : ''">
+      <li @click="getLike()" :class="isLike ? 'like' : ''">
         <el-icon>
           <i-ep-Apple />
         </el-icon>
@@ -38,7 +33,7 @@
         <el-icon>
           <i-ep-ChatDotRound />
         </el-icon>
-        <span>{{ data.info.collectNum }}</span>
+        <span>{{ data.commentNum }}</span>
         <el-divider />
       </li>
       <li @click="isCollect = !isCollect" :class="isCollect ? 'collect' : ''">
@@ -59,7 +54,11 @@
   </div>
 
   <transition name="fade">
-    <Comment v-show="isComment" @close="closeComment" :newsId="path"></Comment>
+    <Comment
+      v-show="isComment"
+      @close="closeComment"
+      :articleId="path"
+    ></Comment>
   </transition>
 
   <el-backtop :bottom="100">
@@ -81,58 +80,73 @@
   </el-backtop>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import { useRoute } from "vue-router";
 import Api from "../Api";
-import Comment from "../components/Comment/Comment.vue";
-import router from "../routers";
 
-export default {
-  setup() {
-    let isLike = ref(false);
-    let isComment = ref(false);
-    let isCollect = ref(false);
+interface detailInfo {
+  info: {
+    title: string;
+    createTime: string;
+    authorName: string;
+    content: string;
+    tag: string;
+    likeNum: number;
+  };
 
-    const route = useRoute();
-    let path = route.query.newsId!.toString();
+  commentNum: number;
+}
 
-    // 通过请求服务器获取数据，死数据替代
-    let data = reactive({
-      info: {},
-    });
+let isLike = ref(false);
+let isComment = ref(false);
+let isCollect = ref(false);
 
-    function shareThis() {}
-    function closeComment() {
-      isComment.value = false;
-    }
-    async function getDetail() {
-      const result = await Api.article.getDetail(path);
+const route = useRoute();
+let path = route.query.articleId as string;
 
-      if (result.code === "200") {
-        data.info = result.data;
-        console.log(data.info);
-      } else {
-        ElMessage({
-          message: result.message,
-          type: "warning",
-        });
-      }
-    }
-    onMounted(() => {
-      getDetail();
-    });
-
-    return {
-      data,
-      path,
-      isLike,
-      isComment,
-      isCollect,
-      shareThis,
-      closeComment,
-    };
+// 通过请求服务器获取数据，死数据替代
+let data = reactive<detailInfo>({
+  info: {
+    title: "",
+    createTime: "",
+    authorName: "",
+    content: "",
+    tag: "",
+    likeNum: 0,
   },
-};
+  commentNum: 0,
+});
+
+function shareThis() {}
+function closeComment() {
+  isComment.value = false;
+}
+async function getDetail() {
+  const result = await Api.article.getDetail(path);
+
+  if (result.code === 200) {
+    data.info = result.data.article;
+    data.commentNum = result.data.commentNum;
+  } else {
+    ElMessage({
+      message: result.message,
+      type: "warning",
+    });
+  }
+}
+
+async function getLike() {
+  isLike.value = !isLike.value;
+  let result = await Api.article.getLike(path, Number(isLike.value));
+  if (result.code == 200) {
+    // 刷新数据
+    getDetail();
+  }
+}
+
+onMounted(() => {
+  getDetail();
+});
 </script>
 
 <style lang="scss" scoped>

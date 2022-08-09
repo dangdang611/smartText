@@ -49,6 +49,7 @@ import { ElMessage, FormInstance } from "element-plus";
 import Api from "../../Api";
 import Cookies from "js-cookie";
 import emitter from "../../utils/mitt";
+import { use } from "echarts";
 
 // import { defineEmits } from "vue";
 //  使用defineEmits创建名称，接受一个数组
@@ -90,20 +91,26 @@ function submitForm(formName: FormInstance | undefined) {
 
       let result = await Api.user.login(user);
 
-      if (result.code == "200") {
+      if (result.code == 200) {
         ElMessage({
           message: "登录成功",
           type: "success",
         });
 
         // 保存用户信息
-        localStorage.setItem("count", ruleForm.count);
+        let user_info = {
+          userId: result.data.userId,
+          userCount: result.data.userCount,
+          userAvatar: result.data.userAvatar,
+        };
 
-        // 创建一个有效时间为1天的cookie
-        Cookies.set("smartToken", result.data.token, { expires: 1 });
+        localStorage.setItem("user_info", JSON.stringify(user_info));
+
+        // 创建一个有效时间为1天的cookie来存储token
+        Cookies.set("smartToken", result.data.accessToken, { expires: 1 });
 
         // 刷新Header
-        emitter.emit("refreshHeader", result.data.userAvatar);
+        emitter.emit("refreshHeader", "./images/logo2.png");
 
         // 关闭Login组件
         close();
@@ -111,7 +118,7 @@ function submitForm(formName: FormInstance | undefined) {
         resetForm(formName);
       } else {
         ElMessage({
-          message: "登录失败，请检查密码或账号",
+          message: result.msg,
           type: "warning",
         });
       }

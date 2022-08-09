@@ -1,9 +1,12 @@
+/**
+ * 登录、注册、注销
+ */
 import { base } from "./base";
 import Request from "../utils/request";
 
 export default class User {
   static user = new Request({
-    baseURL: `${base.server3}/user`,
+    baseURL: `${base.server3}`,
   });
 
   // 用户登录
@@ -25,9 +28,11 @@ export default class User {
       })
       .then(
         (value) => {
+          console.log(value);
           return value;
         },
         (reason) => {
+          // console.log(reason);
           return reason;
         }
       );
@@ -45,9 +50,11 @@ export default class User {
       })
       .then(
         (value) => {
+          console.log(value);
           return value;
         },
         (reason) => {
+          console.log(reason);
           return reason;
         }
       );
@@ -55,12 +62,12 @@ export default class User {
 
   // 用户注册
   static register({
-    userCount,
-    userPassword,
+    phone,
+    password,
     code,
   }: {
-    userCount: string;
-    userPassword: string;
+    phone: string;
+    password: string;
     code: string;
   }) {
     return User.user
@@ -68,16 +75,18 @@ export default class User {
         url: "/register",
         method: "POST",
         data: {
-          userCount,
-          userPassword,
+          phone,
+          password,
           code,
         },
       })
       .then(
         (value) => {
+          console.log(value);
           return value;
         },
         (reason) => {
+          console.log(reason);
           return reason;
         }
       );
@@ -104,20 +113,44 @@ export default class User {
   }
 
   // 获取用户数据
-  static getUserData(userCount: string | null) {
+  static getUserData(userId: string) {
     return User.user
       .request({
-        url: "/getUserData",
+        url: "/user/count_user",
         method: "GET",
         params: {
-          userCount,
+          userId,
         },
       })
       .then(
         (value) => {
+          console.log(value);
           return value;
         },
         (reason) => {
+          console.log(reason);
+          return reason;
+        }
+      );
+  }
+
+  //获取用户的昵称
+  static getUserName(userId: string) {
+    return User.user
+      .request({
+        url: "/user/get_user",
+        method: "GET",
+        params: {
+          userId,
+        },
+      })
+      .then(
+        (value) => {
+          console.log(value);
+          return value;
+        },
+        (reason) => {
+          console.log(reason);
           return reason;
         }
       );

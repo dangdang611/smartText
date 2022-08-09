@@ -35,7 +35,6 @@
 
 <script lang="ts">
 import { ElMessage } from "element-plus";
-import { at } from "lodash";
 import { useRouter, useRoute } from "vue-router";
 import Api from "../../Api";
 
@@ -57,9 +56,12 @@ export default {
       router.push("/editorManage");
     }
 
-    onMounted(async () => {
-      const result = await Api.user.getUserData(localStorage.getItem("count"));
-      if (result.code === "200") {
+    async function getCountUser() {
+      const result = await Api.user.getUserData(
+        JSON.parse(localStorage.getItem("user_info") || "{}").userId
+      );
+      if (result.code === 200) {
+        console.log(result.data);
         const { likeNum, fansNum, attentionNum } = result.data;
         data.likeNum = likeNum;
         data.fansNum = fansNum;
@@ -70,6 +72,10 @@ export default {
           type: "warning",
         });
       }
+    }
+
+    onMounted(() => {
+      getCountUser();
     });
 
     return {
@@ -103,7 +109,7 @@ export default {
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 30px 28px;
+        padding: 15px 28px;
         border-radius: 10px;
         background: rgb(64 158 255 / 5%);
 

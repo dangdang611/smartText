@@ -1,10 +1,10 @@
 <template>
-  <div class="itemContainer" @click="goDetail(message.newsId)">
+  <div class="itemContainer" @click="goDetail(message.id)">
     <div class="left">
       <h3>{{ message.title }}</h3>
-      <span>{{ message.author }}</span>
-      <span>{{ message.commentNum }} 评论</span>
-      <span>{{ message.time }}</span>
+      <span>{{ message.authorName }}</span>
+      <span>{{ message.showNum }} 浏览量</span>
+      <span>{{ message.createTime.slice(0, 10) }}</span>
       <el-icon style="vertical-align: middle" class="close">
         <i-ep-close />
       </el-icon>
@@ -15,23 +15,15 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import { useRouter } from "vue-router";
 
-export default {
-  props: ["message"],
-  setup() {
-    const router = useRouter();
+const props = defineProps(["message"]);
+const router = useRouter();
 
-    function goDetail(id: string) {
-      router.push(`/detail?newsId=${id}`);
-    }
-
-    return {
-      goDetail,
-    };
-  },
-};
+function goDetail(id: string) {
+  router.push(`/detail?articleId=${id}`);
+}
 </script>
 
 <style lang="scss" scoped>

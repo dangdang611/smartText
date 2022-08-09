@@ -157,13 +157,13 @@ function submitForm(formName: FormInstance | undefined) {
   formName.validate(async (valid) => {
     if (valid) {
       let user = {
-        userCount: ruleForm2.tel,
-        userPassword: ruleForm2.pass,
+        phone: ruleForm2.tel,
+        password: ruleForm2.pass,
         code: ruleForm2.code,
       };
-      let result = await Api.user.register(user);
+      let result = await Api.user.register({ ...user });
       console.log(result);
-      if (result.code == "200") {
+      if (result.code == 200) {
         ElMessage({
           message: "注册成功",
           type: "success",
@@ -175,15 +175,15 @@ function submitForm(formName: FormInstance | undefined) {
 
         // 是否直接去登录
         ElMessageBox.confirm("现在去登录吗？", "提示", {
-          confirmButtonText: "OK",
-          cancelButtonText: "Cancel",
+          confirmButtonText: "确认",
+          cancelButtonText: "取消",
           type: "info",
         }).then(() => {
           toLog();
         });
       } else {
         ElMessage({
-          message: "注册失败",
+          message: result.msg,
           type: "warning",
         });
       }

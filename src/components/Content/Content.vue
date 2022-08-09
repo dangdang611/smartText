@@ -3,16 +3,16 @@
     <div class="leftContent">
       <div class="recommend">
         <el-menu
-          default-active="/getAttentionArticle"
+          default-active="/get_attentionArticle"
           class="el-menu-demo"
           mode="horizontal"
           @select="handleSelect"
         >
-          <el-menu-item index="/getAttentionArticle">关注</el-menu-item>
-          <el-menu-item index="/getLikeArticle">猜你喜欢</el-menu-item>
-          <el-menu-item index="/getHotArticle">热点</el-menu-item>
-          <el-menu-item index="/getNewArticle">最新</el-menu-item>
-          <el-menu-item index="/getOtherArticle">更多</el-menu-item>
+          <el-menu-item index="/get_attentionArticle">关注</el-menu-item>
+          <el-menu-item index="/get_likeArticle">猜你喜欢</el-menu-item>
+          <el-menu-item index="/get_hotArticle">热点</el-menu-item>
+          <el-menu-item index="/get_newArticle">最新</el-menu-item>
+          <el-menu-item index="/get_otherArticle">更多</el-menu-item>
         </el-menu>
       </div>
       <div class="content">
@@ -36,17 +36,17 @@
 
 <script lang="ts" setup>
 import { ElMessage } from "element-plus";
-import { useRoute, useRouter } from "vue-router";
 import Api from "../../Api";
 import emitter from "../../utils/mitt";
 
-let page = ref(1);
-let size = ref(3);
+let page = ref(0);
+let size = ref(4);
 let count = reactive({
   num: 0,
 });
-let currentPath = ref("/getAttentionArticle");
-const userCount = localStorage.getItem("count");
+let currentPath = ref("/get_attentionArticle");
+const userId = JSON.parse(localStorage.getItem("user_info") || "{}").userId;
+
 let recommendContent = reactive({
   NewMessage: [],
   VideoMessage: [],
@@ -56,15 +56,15 @@ async function handleSelect(indexPath: string) {
   currentPath.value = indexPath;
   const result = await Api.article.getArticle(
     indexPath,
-    userCount,
+    userId,
     page.value,
     size.value
   );
 
-  if (result.code === "200") {
-    recommendContent.NewMessage = result.data.newsMessage;
-    recommendContent.VideoMessage = result.data.videoMessage;
-    count.num = result.data.total;
+  if (result.code === 200) {
+    recommendContent.NewMessage = result.data;
+    // recommendContent.VideoMessage = result.data.videoMessage;
+    // count.num = result.data.total;
   } else {
     ElMessage({
       message: result.message,
@@ -75,6 +75,7 @@ async function handleSelect(indexPath: string) {
 
 onMounted(() => {
   handleSelect(currentPath.value);
+
   emitter.on("refreshHomeData", (currentPage) => {
     page.value = currentPage as number;
 
@@ -134,7 +135,7 @@ onUnmounted(() => {
       margin-bottom: 10px;
       padding: 20px;
       width: 100%;
-      height: 40%;
+      height: 250px;
       background: #fff;
     }
 

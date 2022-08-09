@@ -1,5 +1,5 @@
 <template>
-  <NewItem v-for="m of NewMessage" :key="m.newsId" :message="m"></NewItem>
+  <NewItem v-for="m of NewMessage" :key="m.id" :message="m"></NewItem>
   <div class="videoShow">
     <VideoNews
       v-for="m of VideoMessage"

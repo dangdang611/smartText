@@ -29,7 +29,7 @@ export default class Article {
   // 获取资讯
   static getArticle(
     path: string,
-    userCount: string | null,
+    userId: string | null,
     page: number,
     size: number
   ) {
@@ -38,13 +38,14 @@ export default class Article {
         url: path,
         method: "GET",
         params: {
-          userCount,
+          userId,
           page,
           size,
         },
       })
       .then(
         (value) => {
+          console.log(value);
           return value;
         },
         (reason) => {
@@ -54,33 +55,13 @@ export default class Article {
   }
 
   // 获取资讯内容
-  static getDetail(newsId: string | null) {
+  static getDetail(articleId: string) {
     return Article.article
       .request({
-        url: "/getArticleDetail",
+        url: "/get_articleDetail",
         method: "GET",
         params: {
-          newsId,
-        },
-      })
-      .then(
-        (value) => {
-          return value;
-        },
-        (reason) => {
-          return reason;
-        }
-      );
-  }
-
-  // 获取资讯评论
-  static getComment(newsId: string | null) {
-    return Article.article
-      .request({
-        url: "/getComment",
-        method: "GET",
-        params: {
-          newsId,
+          articleId,
         },
       })
       .then(
@@ -166,6 +147,27 @@ export default class Article {
           keyword,
           page,
           size,
+        },
+      })
+      .then(
+        (value) => {
+          return value;
+        },
+        (reason) => {
+          return reason;
+        }
+      );
+  }
+
+  //文章点赞
+  static getLike(id: string, isAdd: number) {
+    return Article.article
+      .request({
+        url: "/giveLike_article",
+        method: "GET",
+        params: {
+          id,
+          isAdd,
         },
       })
       .then(

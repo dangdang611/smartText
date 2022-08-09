@@ -11,24 +11,22 @@
     </div>
     <div :class="isLike ? 'active' : ''">
       <span>{{ comment.likeNum }}</span
-      ><span @click="isLike = !isLike"
+      ><span @click="getLike"
         ><el-icon><i-ep-Apple /></el-icon
       ></span>
     </div>
   </div>
 </template>
 
-<script lang="ts">
-export default {
-  props: ["comment"],
-  setup() {
-    let isLike = ref(false);
+<script lang="ts" setup>
+const props = defineProps(["comment"]);
+const $myemit = defineEmits(["getLike"]);
+let isLike = ref(false);
 
-    return {
-      isLike,
-    };
-  },
-};
+function getLike() {
+  isLike.value = !isLike.value;
+  $myemit("getLike", props.comment.id, Number(isLike.value));
+}
 </script>
 
 <style lang="scss" scoped>

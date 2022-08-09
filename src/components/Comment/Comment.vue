@@ -20,55 +20,70 @@
         <CommentItem
           v-for="c of data.comments"
           :comment="c"
-          :key="c.commentId"
+          :key="c.id"
+          @getLike="getLike"
         ></CommentItem>
       </div>
     </div>
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import Api from "../../Api";
-import CommentItem from "./CommentItem.vue";
-export default {
-  emits: ["close"],
-  props: ["newsId"],
-  setup(props: any, context: { emit: (arg0: string) => void }) {
-    let textarea = ref("");
-    // 模拟数据
-    let data = reactive({
-      commentNum: 0,
-      comments: [],
+interface Comment {
+  id: string;
+  createTime: string;
+  authorId: string;
+  userId: string;
+  content: string;
+  likeNum: number;
+}
+
+interface CommentInfo {
+  commentNum: number;
+  comments: Comment[];
+}
+
+const $myemit = defineEmits(["close"]);
+const props = defineProps(["articleId"]);
+
+let textarea = ref("");
+
+// 模拟数据
+let data: CommentInfo = reactive({
+  commentNum: 0,
+  comments: [],
+});
+
+async function getComment() {
+  const result = await Api.comment.getComment(props.articleId);
+
+  if (result.code === 200) {
+    data.commentNum = result.data[1];
+    data.comments = result.data[0];
+  } else {
+    ElMessage({
+      message: result.message,
+      type: "warning",
     });
+  }
+}
 
-    async function getComment() {
-      const result = await Api.article.getComment(props.newsId);
+async function getLike(commentId: string, isAdd: number) {
+  let result = await Api.comment.getLike(commentId, isAdd);
+  if (result.code == 200) {
+    // 刷新数据
+    getComment();
+  }
+}
 
-      if (result.code === "200") {
-        data.commentNum = result.data.commentNum;
-        data.comments = result.data.comments;
-      } else {
-        ElMessage({
-          message: result.message,
-          type: "warning",
-        });
-      }
-    }
-    function close() {
-      context.emit("close");
-    }
+function close() {
+  $myemit("close");
+}
 
-    onMounted(() => {
-      getComment();
-    });
-    return {
-      textarea,
-      data,
-      close,
-      getComment,
-    };
-  },
-};
+onMounted(() => {
+  getComment();
+});
 </script>
 
 <style lang="scss" scoped>

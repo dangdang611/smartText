@@ -15,7 +15,7 @@
         <li
           v-for="(hot, index) in data.hotNews"
           :key="hot.newsId"
-          @click="goDetail(hot.newsId)"
+          @click="goDetail(hot.id)"
         >
           <span v-if="index == 0"
             ><el-icon> <i-ep-Flag /> </el-icon
@@ -40,9 +40,9 @@ export default {
     });
 
     async function refreshHot() {
-      const result = await Api.article.getArticle("/getHotRank", null, 1, 10);
-      if (result.code === "200") {
-        data.hotNews = result.data.ranks;
+      const result = await Api.article.getArticle("/get_hotRank", null, 0, 10);
+      if (result.code === 200) {
+        data.hotNews = result.data;
       } else {
         ElMessage({
           message: result.message,

@@ -21,8 +21,8 @@
         </li>
         <li @click="login" v-show="!isLogin">登录</li>
         <li v-show="isLogin">
-          <el-avatar class="head" :src="userAvatar" />
-          {{ count }}
+          <el-avatar class="head" :src="userInfo.userAvatar" />
+          {{ userInfo.userCount }}
         </li>
         <li v-show="isLogin">
           <el-dropdown trigger="click">
@@ -76,8 +76,8 @@
         </li>
         <li @click="login" v-show="!isLogin">登录</li>
         <li v-show="isLogin">
-          <el-avatar class="head" :src="userAvatar" />
-          {{ count }}
+          <el-avatar class="head" :src="userInfo.userAvatar" />
+          {{ userInfo.userCount }}
         </li>
         <li v-show="isLogin">
           <el-dropdown trigger="click">
@@ -129,8 +129,8 @@
         </li>
         <li @click="login" v-show="!isLogin">登录</li>
         <li v-show="isLogin">
-          <el-avatar class="head" :src="userAvatar" />
-          {{ count }}
+          <el-avatar class="head" :src="userInfo.userAvatar" />
+          {{ userInfo.userCount }}
         </li>
         <li v-show="isLogin">
           <el-dropdown trigger="click">
@@ -156,24 +156,33 @@ import emitter from "../../utils/mitt";
 import Cookies from "js-cookie";
 
 const $myemit = defineEmits(["openLogin"]);
-let userAvatar = ref("./images/logo.png");
+
+let userInfo = reactive({
+  userCount: "",
+  userAvatar: "",
+});
+
+// 初始化
+getUserInfo();
+
 let isShow = ref(true);
-let count = localStorage.getItem("count") || "";
-let isLogin = count ? ref(true) : ref(false);
+let isLogin = userInfo.userCount ? ref(true) : ref(false);
 let keyword = ref("");
 
+// 登录
 function login() {
   $myemit("openLogin");
 }
 
+// 注销
 function loginOut() {
   ElMessageBox.confirm("确定要注销账号吗？", "提示", {
-    confirmButtonText: "OK",
-    cancelButtonText: "Cancel",
+    confirmButtonText: "注销",
+    cancelButtonText: "取消",
     type: "warning",
   }).then(async () => {
-    const result = await Api.user.logout(count);
-    if (result.code === "200") {
+    const result = await Api.user.logout(userInfo.userCount);
+    if (result.code === 200) {
       ElMessage({
         type: "success",
         message: "注销成功",
@@ -183,7 +192,8 @@ function loginOut() {
       Cookies.remove("smartToken");
 
       // 清除缓存
-      localStorage.removeItem("count");
+      localStorage.removeItem("user_info");
+
       isLogin.value = false;
     } else {
       ElMessage({
@@ -192,6 +202,13 @@ function loginOut() {
       });
     }
   });
+}
+
+//获取用户信息
+function getUserInfo() {
+  let info = JSON.parse(localStorage.getItem("user_info") || "{}");
+  userInfo.userAvatar = info.userAvatar;
+  userInfo.userCount = info.userCount;
 }
 
 // 切换两个头部样式
@@ -211,10 +228,8 @@ window.onscroll = function () {
 onMounted(() => {
   // 刷新Header数据
   emitter.on("refreshHeader", (avatar) => {
-    userAvatar.value = avatar as string;
+    getUserInfo();
     isLogin.value = true;
-    count = localStorage.getItem("count") || "";
-    console.log(count);
   });
 });
 

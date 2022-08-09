@@ -1,10 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import Cookies from "js-cookie";
 import { showMessage } from "./status";
-type Result<T> = {
-  code: number;
-  message: string;
-  result: T;
-};
 
 class Request {
   // axios实例
@@ -25,8 +21,12 @@ class Request {
         config.headers = {
           //'Content-Type':'application/x-www-form-urlencoded',   // 传参方式表单
           "Content-Type": "application/json;charset=UTF-8", // 传参方式json
-          token: localStorage.getItem("token") || "", // 这里自定义配置，这里传的是token
         };
+
+        if (Cookies.get("smartToken")) {
+          // 传的是token
+          config.headers.authorization = "Bearer " + Cookies.get("smartToken");
+        }
 
         return config;
       },
