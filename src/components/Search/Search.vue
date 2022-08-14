@@ -17,7 +17,8 @@
           v-model="state"
           :fetch-suggestions="querySearchAsync"
           :trigger-on-focus="false"
-          placeholder=""
+          placeholder="请输入资讯标题"
+          value-key="title"
           @select="handleSelect"
         />
         <el-button type="primary" @click="handleSelect">
@@ -30,8 +31,8 @@
         <i></i>
         今日热搜：
         <ul>
-          <li v-for="top in topSearch" :key="top.id">
-            {{ top.title }}
+          <li v-for="top in topSearch" :key="top.id" @click="goDetail(top.id)">
+            {{ top.title.slice(0, 10) + "..." }}
           </li>
         </ul>
       </div>
@@ -44,20 +45,17 @@ import Api from "../../Api";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import emitter from "../../utils/mitt";
-const router = useRouter();
 const state = ref("");
 
-interface LinkItem {
-  value: string;
-  newsId: string;
-}
-interface topItem {
+interface SearchItem {
   title: string;
   id: string;
 }
 
+const router = useRouter();
+
 let timer: NodeJS.Timeout;
-let topSearch = ref<topItem[]>([]);
+let topSearch = ref<SearchItem[]>([]);
 async function refreshTop() {
   let result = await Api.article.getArticle("/get_hotRank", null, 0, 3);
   if (result.code == 200) {
@@ -65,12 +63,12 @@ async function refreshTop() {
   }
 }
 
-const links = ref<LinkItem[]>([]);
+const restaurants = ref<SearchItem[]>([]);
 
 const loadAll = async (keyword: string) => {
-  const result = await Api.search.autoComplete(keyword);
-  if (result.code === "200") {
-    links.value = result.data.searchResult;
+  const result = await Api.article.autoComplete(keyword);
+  if (result.code === 200) {
+    restaurants.value = result.data;
   } else {
     ElMessage({
       message: result.message,
@@ -79,22 +77,18 @@ const loadAll = async (keyword: string) => {
   }
 };
 
-let timeout: NodeJS.Timeout;
-const querySearchAsync = (queryString: string, cb: (arg: any) => void) => {
+const querySearchAsync = (queryString: string, cb: any) => {
   const results = queryString
-    ? links.value.filter(createFilter(queryString))
-    : links.value;
+    ? restaurants.value.filter(createFilter(queryString))
+    : restaurants.value;
 
-  clearTimeout(timeout);
-  timeout = setTimeout(() => {
-    cb(results);
-  }, 1000 * Math.random());
+  cb(results);
 };
 
 const createFilter = (queryString: string) => {
-  return (restaurant: LinkItem) => {
+  return (restaurant: SearchItem) => {
     return (
-      restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+      restaurant.title.toLowerCase().indexOf(queryString.toLowerCase()) === 0
     );
   };
 };
@@ -104,21 +98,26 @@ const handleSelect = () => {
   emitter.emit("toSearch", state.value);
 };
 
+function goDetail(newsId: string) {
+  router.push(`/detail?articleId=${newsId}`);
+}
+
 watch(state, () => {
   loadAll(state.value);
 });
 
 onMounted(() => {
+  loadAll(state.value);
   refreshTop();
+
   timer = setInterval(() => {
     refreshTop();
   }, 60 * 10000);
-  loadAll(state.value);
 });
 
 onUnmounted(() => {
   // 清除定时器
-  clearInterval(timeout);
+  clearInterval(timer);
 });
 </script>
 
@@ -193,6 +192,9 @@ onUnmounted(() => {
         li {
           padding: 0 10px;
           cursor: pointer;
+        }
+        li:hover {
+          color: #409eff;
         }
       }
     }

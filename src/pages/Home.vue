@@ -33,8 +33,12 @@ let key = reactive({
 
 onMounted(() => {
   emitter.on("toSearch", (keyword) => {
-    isSearch.value = true;
-    key.value = keyword as string;
+    if (keyword == "") {
+      isSearch.value = false;
+    } else {
+      isSearch.value = true;
+      key.value = keyword as string;
+    }
   });
 });
 

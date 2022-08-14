@@ -65,7 +65,7 @@ async function createDigest() {
   let min = Number(keys(wordsArray[Number(limitNum.value)])[0]);
   let max = Number(values(wordsArray[Number(limitNum.value)])[0]);
 
-  const result = await Api.article.getSmartDigest(props.data, min, max);
+  const result = await Api.ai.getSmartTitle(props.data, min, max);
 
   if (result.code === "200") {
     smartDigest.value = result.data.digests;

@@ -8,7 +8,7 @@
       </div>
       <el-divider />
       <mavon-editor
-        v-model="data.context"
+        v-model="data.mdContent"
         @change="change"
         @imgAdd="addImg"
         ref="editor"
@@ -31,7 +31,6 @@
 </template>
 
 <script lang="ts" setup>
-import axios from "axios";
 import { useRoute } from "vue-router";
 import Api from "../Api";
 import ConfirmPublish from "../components/Editor/ConfirmPublish.vue";
@@ -41,13 +40,14 @@ const route = useRoute();
 
 let data = reactive({
   title: "",
-  context: "",
-  mdContext: "",
+  content: "",
+  coverPic: "",
+  mdContent: "",
 });
 
 let isPublish = ref(false);
 let wordsNum = computed(() => {
-  return data.context.length;
+  return data.content.length || 0;
 });
 
 function searchStrIndexOf(str: string, target: string) {
@@ -61,7 +61,7 @@ function searchStrIndexOf(str: string, target: string) {
 }
 
 let colNum = computed(() => {
-  return searchStrIndexOf(data.context, "\n");
+  return searchStrIndexOf(data.content, "\n");
 });
 
 function closePublish() {
@@ -69,7 +69,7 @@ function closePublish() {
 }
 
 function change(value: string, render: string) {
-  data.mdContext = render;
+  data.content = render;
 }
 
 function publish() {
@@ -81,41 +81,51 @@ function goTop() {
 }
 
 async function addImg(pos: string, $file: string) {
-  console.log(pos);
-
-  console.log($file);
-
   //新建form表单类型的数据
   let formData = new FormData();
   //将我们上传的图片地址$file加进表单里面，命名为“file”（参数名字与后端相匹配）
   formData.append("pic", $file);
-  axios({
-    url: "http://101.35.194.184:8080/club/fileupload/pic.do", //请求地址
-    method: "POST",
-    data: formData,
-    headers: { "Content-Type": "multipart/form-data" },
-  }).then((res) => {
-    if (res.status === 200) {
-      // 将后端返回的url放在md中图片的指定位置
-      ctx.$refs.editor.$img2Url(pos, res.data.data);
-    } else {
-      ElMessage({
-        message: "上传失败",
-        type: "warning",
-      });
-    }
-  });
+  let result = await Api.resource.uploadPic(formData);
+  if (result.status == 200) {
+    ctx.$refs.editor.$img2Url(pos, result.data);
+  } else {
+    ElMessage({
+      message: "上传失败",
+      type: "warning",
+    });
+  }
 }
 
 onMounted(async () => {
-  let newsId = route.query.newsId;
-  console.log(newsId);
+  let articleId = route.query.articleId as string;
 
-  if (newsId) {
-    const result = await Api.article.getDetail(newsId as string);
-    if (result.code === "200") {
-      data.title = result.data.title;
-      data.context = result.data.newsContext;
+  if (articleId) {
+    //查询已发布的文章
+    let result = await Api.article.getDetail(articleId);
+
+    //查询失败，查询审核中的文章
+    if (result.data == null) {
+      result = await Api.checking_article.getDetail(articleId);
+
+      //查询再次失败，查询审核失败的文章
+      if (result.data == null) {
+        result = await Api.fail_article.getDetail(articleId);
+      }
+    }
+
+    //最终查询成功
+    if (result.data != null) {
+      ({
+        title: data.title,
+        content: data.content,
+        coverPic: data.coverPic,
+        mdContent: data.mdContent,
+      } = result.data);
+    } else {
+      ElMessage({
+        message: "查询失败",
+        type: "warning",
+      });
     }
   }
 });
@@ -124,7 +134,7 @@ onMounted(async () => {
 <style lang="scss" scoped>
 .pageContainer {
   overflow: hidden;
-  background: whitesmoke;
+  background: #f5f6f7;
   .pageContent {
     display: flex;
     flex-direction: column;

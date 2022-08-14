@@ -28,11 +28,11 @@
           src="https://mapapi.qq.com/web/lbs/console/v/images/todo_monitor.dd6ad34.png"
           alt=""
         />
-        <h4>今日创作文章数</h4>
+        <h4>今日新增浏览量</h4>
         <h3>
-          {{ viewData.articleAddNums[viewData.articleAddNums.length - 1] }}
+          {{ viewData.showAddNums[viewData.showAddNums.length - 1] }}
         </h3>
-        <h6>总文章数：{{ viewData.articleNums }}</h6>
+        <h6>总浏览量：{{ viewData.showNums }}</h6>
       </div>
     </div>
     <div id="myChart"></div>
@@ -45,12 +45,24 @@
         </el-icon>
         创作者信息
       </h4>
-      <ul>
-        <li>开发者：<span>用户18613932106</span></li>
-        <li>开发等级：<span>LV1</span></li>
-        <li>发布文章总数：<span>113</span></li>
-        <li>被收藏总数：<span>43</span></li>
-        <li>被评论总数：<span>110</span></li>
+      <div class="top">
+        <el-avatar size="large" :src="userInfo.userAvatar"> user </el-avatar>
+        <span class="name">{{ userInfo.userName }}</span>
+      </div>
+      <el-divider content-position="left">个人成就</el-divider>
+      <ul class="bottom">
+        <li>
+          <el-icon><i-ep-Histogram /></el-icon>创作
+          <span> {{ userInfo.writeNum }}</span>
+        </li>
+        <li>
+          <el-icon><i-ep-User /></el-icon>粉丝
+          <span>{{ userInfo.fansNum }}</span>
+        </li>
+        <li>
+          <el-icon><i-ep-View /></el-icon>展示
+          <span>{{ userInfo.showNum }}</span>
+        </li>
       </ul>
     </div>
     <div class="otherMessage">
@@ -74,12 +86,30 @@
 </template>
 
 <script lang="ts" setup>
-import { log } from "console";
+import { ElMessage } from "element-plus";
 import * as echarts from "echarts";
 import Api from "../../Api";
+
+let userInfo = reactive({
+  userAvatar: "",
+  userName: "",
+  userId: "",
+  writeNum: "",
+  fansNum: "",
+  showNum: "",
+});
+
+//取出用户有关数据
+let data = JSON.parse(localStorage.getItem("user_info") || "{}");
+({
+  userAvatar: userInfo.userAvatar,
+  userName: userInfo.userName,
+  userId: userInfo.userId,
+} = data);
+
 let viewData = reactive({
-  articleAddNums: [12, 19, 21, 1, 3, 23, 12],
-  articleNums: 100,
+  showAddNums: [12, 19, 21, 1, 3, 23, 12],
+  showNums: 100,
   fansAddNums: [1, 2, 3, 5, 2, 3, 4],
   fansNums: 4,
   likeAddNums: [1, 2, 3, 1, 2, 1, 5],
@@ -91,43 +121,43 @@ let sourceData = ref([
     product: "3/29",
     新增粉丝: 83.1,
     新增点赞: 73.4,
-    新增文章: 55.1,
+    新增浏览量: 55.1,
   },
   {
     product: "3/30",
     新增粉丝: 86.4,
     新增点赞: 65.2,
-    新增文章: 82.5,
+    新增浏览量: 82.5,
   },
   {
     product: "3/31",
     新增粉丝: 72.4,
     新增点赞: 53.9,
-    新增文章: 39.1,
+    新增浏览量: 39.1,
   },
   {
     product: "4/1",
     新增粉丝: 71.4,
     新增点赞: 56,
-    新增文章: 30,
+    新增浏览量: 30,
   },
   {
     product: "4/2",
     新增粉丝: 22.4,
     新增点赞: 51.9,
-    新增文章: 49.1,
+    新增浏览量: 49.1,
   },
   {
     product: "4/3",
     新增粉丝: 45.4,
     新增点赞: 51.9,
-    新增文章: 49.1,
+    新增浏览量: 49.1,
   },
   {
     product: "4/4",
     新增粉丝: 43.3,
     新增点赞: 85.8,
-    新增文章: 93.7,
+    新增浏览量: 93.7,
   },
 ]);
 
@@ -152,7 +182,7 @@ function drawLine() {
       // 默认把第一个维度映射到 X 轴上，后面维度映射到 Y 轴上。
       // 如果不指定 dimensions，也可以通过指定 series.encode
       // 完成映射
-      dimensions: ["product", "新增粉丝", "新增点赞", "新增文章"],
+      dimensions: ["product", "新增粉丝", "新增点赞", "新增浏览量"],
       source: sourceData.value,
     },
     xAxis: {
@@ -230,14 +260,29 @@ function drawLine() {
   // 绘制图表
   myChart.setOption(option);
 }
-
-onMounted(async () => {
-  const result = await Api.manage.getHomeData(localStorage.getItem("count")!);
-  if (result.code === "200") {
+const getUserData = async () => {
+  let result = await Api.user.getUserData(userInfo.userId);
+  if (result.code === 200) {
+    ({
+      fansNum: userInfo.fansNum,
+      writeNum: userInfo.writeNum,
+      showNum: userInfo.showNum,
+    } = result.data);
+  } else {
+    ElMessage({
+      message: result.message,
+      type: "warning",
+    });
+  }
+};
+const getDrawData = async () => {
+  const result = await Api.user.getUserWeekData(userInfo.userId);
+  if (result.code === 200) {
     // 获取并更新七天的数据
     for (const key in result.data) {
       viewData[key] = result.data[key];
     }
+    console.log(viewData);
 
     // 处理数据格式
     for (let i = 0; i < 7; i++) {
@@ -245,7 +290,7 @@ onMounted(async () => {
         product: "6/" + (1 + i),
         新增粉丝: viewData.fansAddNums[i],
         新增点赞: viewData.likeAddNums[i],
-        新增文章: viewData.articleAddNums[i],
+        新增浏览量: viewData.showAddNums[i],
       };
     }
   } else {
@@ -254,8 +299,12 @@ onMounted(async () => {
       message: "连接服务器失败",
     });
   }
-
   drawLine();
+};
+
+onMounted(async () => {
+  getDrawData();
+  getUserData();
 });
 </script>
 
@@ -325,7 +374,7 @@ onMounted(async () => {
   margin-left: 10px;
   display: flex;
   flex-direction: column;
-  background-color: whitesmoke !important;
+  background-color: #f5f6f7 !important;
 
   > div {
     padding: 20px;
@@ -341,20 +390,49 @@ onMounted(async () => {
         color: #3293ff;
       }
     }
-
-    ul li {
-      padding: 8px 0;
-    }
   }
   .userMessage {
     height: 40%;
     margin-bottom: 15px;
+
+    .top {
+      display: flex;
+      margin: 10px 0px;
+      align-items: center;
+
+      .name {
+        margin-left: 10px;
+        font-size: 16px;
+        font-weight: 700;
+      }
+    }
+    .bottom {
+      font-size: 16px;
+      i {
+        color: #3293ff;
+        margin-right: 10px;
+      }
+      li {
+        padding: 3px 0;
+
+        > span {
+          color: #5daaff;
+          font-size: 17px;
+          font-weight: 700;
+        }
+      }
+
+      li:nth-child(1) {
+        padding: 0;
+      }
+    }
   }
 
   .otherMessage {
     flex: 1;
     ul li {
       font-size: 14px;
+      padding: 8px 0;
 
       span {
         color: #999;

@@ -7,23 +7,23 @@ export default class Resource {
   });
 
   // 上传图片
-  // static uploadPic(formData: FormData) {
-  //   return Resource.resource
-  //     .request({
-  //       url: "/fileupload/pic.do", //请求地址
-  //       method: "POST",
-  //       data: formData,
-  //       headers: { "Content-Type": "multipart/form-data" },
-  //     })
-  //     .then(
-  //       (value) => {
-  //         console.log(value);
-  //         return value;
-  //       },
-  //       (reason) => {
-  //         console.log(reason);
-  //         return reason;
-  //       }
-  //     );
-  // }
+  static uploadPic(formData: FormData) {
+    return Resource.resource
+      .request({
+        url: "/fileupload/pic.do", //请求地址
+        method: "POST",
+        data: formData,
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+      .then(
+        (value) => {
+          console.log(value);
+          return value;
+        },
+        (reason) => {
+          console.log(reason);
+          return reason;
+        }
+      );
+  }
 }

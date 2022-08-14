@@ -14,10 +14,10 @@
       <el-form-item label="字数限制：">
         <el-radio-group v-model="limitNum" size="large">
           <!-- <el-radio label="1" border>0-5字</el-radio> -->
-          <el-radio label="1" border>5-10字</el-radio>
-          <el-radio label="2" border>11-15字</el-radio>
-          <el-radio label="3" border>16-20字</el-radio>
-          <el-radio label="4" border>21-30字</el-radio>
+          <el-radio label="1" border>10字以内</el-radio>
+          <el-radio label="2" border>15字以内</el-radio>
+          <el-radio label="3" border>20字以内</el-radio>
+          <el-radio label="4" border>30字以内</el-radio>
           <el-radio label="5" border>不限</el-radio>
         </el-radio-group>
 
@@ -67,7 +67,7 @@ async function createTitle() {
   let min = Number(keys(wordsArray[Number(limitNum.value)])[0]);
   let max = Number(values(wordsArray[Number(limitNum.value)])[0]);
 
-  const result = await Api.article.getSmartTitle(props.data, min, max);
+  const result = await Api.ai.getSmartTitle(props.data, min, max);
 
   if (result.code === "200") {
     smartTitles.value = result.data.titles;

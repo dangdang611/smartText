@@ -55,6 +55,8 @@ function openRegister() {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
+  overflow: hidden;
+  background-color: #f5f6f7;
 }
 .fade-enter-active,
 .fade-leave-active {
@@ -64,5 +66,24 @@ function openRegister() {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+@keyframes appear {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 100%;
+  }
+}
+
+@keyframes moveY {
+  0% {
+    transform: translateY(-50px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
 }
 </style>

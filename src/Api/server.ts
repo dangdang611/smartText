@@ -112,8 +112,8 @@ export default class User {
       );
   }
 
-  // 获取用户数据
-  static getUserData(userId: string) {
+  // 获取用户统计数据
+  static getUserCount(userId: string) {
     return User.user
       .request({
         url: "/user/count_user",
@@ -134,11 +134,33 @@ export default class User {
       );
   }
 
-  //获取用户的昵称
-  static getUserName(userId: string) {
+  //获取用户的数据
+  static getUserData(userId: string) {
     return User.user
       .request({
         url: "/user/get_user",
+        method: "GET",
+        params: {
+          userId,
+        },
+      })
+      .then(
+        (value) => {
+          console.log(value);
+          return value;
+        },
+        (reason) => {
+          console.log(reason);
+          return reason;
+        }
+      );
+  }
+
+  //获取一周的用户数据
+  static getUserWeekData(userId: string) {
+    return User.user
+      .request({
+        url: "/user/count_week_user",
         method: "GET",
         params: {
           userId,

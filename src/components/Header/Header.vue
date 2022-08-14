@@ -22,7 +22,7 @@
         <li @click="login" v-show="!isLogin">登录</li>
         <li v-show="isLogin">
           <el-avatar class="head" :src="userInfo.userAvatar" />
-          {{ userInfo.userCount }}
+          {{ userInfo.userName }}
         </li>
         <li v-show="isLogin">
           <el-dropdown trigger="click">
@@ -77,7 +77,7 @@
         <li @click="login" v-show="!isLogin">登录</li>
         <li v-show="isLogin">
           <el-avatar class="head" :src="userInfo.userAvatar" />
-          {{ userInfo.userCount }}
+          {{ userInfo.userName }}
         </li>
         <li v-show="isLogin">
           <el-dropdown trigger="click">
@@ -130,7 +130,7 @@
         <li @click="login" v-show="!isLogin">登录</li>
         <li v-show="isLogin">
           <el-avatar class="head" :src="userInfo.userAvatar" />
-          {{ userInfo.userCount }}
+          {{ userInfo.userName }}
         </li>
         <li v-show="isLogin">
           <el-dropdown trigger="click">
@@ -159,6 +159,7 @@ const $myemit = defineEmits(["openLogin"]);
 
 let userInfo = reactive({
   userCount: "",
+  userName: "",
   userAvatar: "",
 });
 
@@ -207,34 +208,31 @@ function loginOut() {
 //获取用户信息
 function getUserInfo() {
   let info = JSON.parse(localStorage.getItem("user_info") || "{}");
-  userInfo.userAvatar = info.userAvatar;
   userInfo.userCount = info.userCount;
+  userInfo.userAvatar = info.userAvatar;
+  userInfo.userName = info.userName;
 }
 
-// 切换两个头部样式
-window.onscroll = function () {
-  //为了保证兼容性，这里取两个值，哪个有值取哪一个
-  //scrollTop就是触发滚轮事件时滚轮的高度
-  var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-  // console.log("滚动距离" + scrollTop);
-
-  if (scrollTop >= 400) {
-    isShow.value = false;
-  } else {
-    isShow.value = true;
-  }
-};
+//切换header样式
+function toggleHeader(show: boolean) {
+  isShow.value = show;
+}
 
 onMounted(() => {
   // 刷新Header数据
-  emitter.on("refreshHeader", (avatar) => {
+  emitter.on("refreshHeader", () => {
     getUserInfo();
     isLogin.value = true;
+  });
+
+  emitter.on("toggleHeader", (show) => {
+    toggleHeader(show as boolean);
   });
 });
 
 onUnmounted(() => {
   emitter.off("refreshHeader");
+  emitter.off("toggleHeader");
 });
 </script>
 
@@ -243,13 +241,13 @@ onUnmounted(() => {
 .headerContainer1,
 .headerContainer2,
 .headerContainer3 {
-  overflow: hidden;
   padding: 15px;
   width: 100%;
   position: fixed;
   display: flex;
+  animation: moveY 0.5s linear alternate;
   color: #ffff;
-  z-index: 999;
+  z-index: 1999;
   .logo a {
     display: block;
     width: 104px;

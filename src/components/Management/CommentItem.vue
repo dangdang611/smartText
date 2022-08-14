@@ -1,13 +1,15 @@
 <template>
   <div class="commentContainer">
     <div class="left">
-      <el-avatar :src="comment.userAvatar" />
+      <el-avatar :src="comment.avatarUrl" />
     </div>
     <div class="right">
       <div class="commentTitle">
-        <span>{{ comment.userCount }}</span>
+        <span>{{ comment.userName }}</span>
         <span>评论了你的文章</span>
-        <span @click="goDetail(comment.newsId)">{{ comment.title }}</span>
+        <span @click="goDetail(comment.articleId)">{{
+          comment.articleName
+        }}</span>
       </div>
       <div class="commentContent">
         <el-icon>
@@ -16,8 +18,8 @@
         {{ comment.content }}
       </div>
       <div class="commentFooter">
-        <span>{{ comment.time }}</span>
-        <span> <a href="#"> 回复 </a><a href="#">删除</a> </span>
+        <span>{{ comment.createTime.slice(0, 10) }}</span>
+        <span @click="del(comment.id)">删除</span>
       </div>
     </div>
   </div>
@@ -27,17 +29,22 @@
 import { useRouter } from "vue-router";
 
 defineProps(["comment"]);
+const emits = defineEmits(["del"]);
 const router = useRouter();
 
-const goDetail = (newsId: string) => {
-  router.push(`/detail?newsId=${newsId}`);
+const goDetail = (articleId: string) => {
+  router.push(`/detail?articleId=${articleId}`);
+};
+
+const del = (commentId: string) => {
+  emits("del", commentId);
 };
 </script>
 
 <style lang="scss" scoped>
 .commentContainer {
   display: flex;
-  padding: 20px 50px;
+  padding: 20px 30px;
   .left {
     width: 5%;
   }
@@ -66,7 +73,7 @@ const goDetail = (newsId: string) => {
       display: flex;
       justify-content: space-between;
 
-      a {
+      span:nth-child(2) {
         color: #999;
         text-decoration: none;
         font-size: 14px;

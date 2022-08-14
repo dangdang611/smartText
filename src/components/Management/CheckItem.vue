@@ -14,8 +14,8 @@
         <span>评论 {{ item.commentNum }}</span>
       </div>
       <div class="right">
-        <span @click="edit(item.id)">编辑</span
-        ><span @click="del(item.id)">删除</span>
+        <span @click="pass(item.id)">通过</span
+        ><span @click="fail(item.id)">不通过</span>
       </div>
     </div>
   </div>
@@ -29,15 +29,15 @@ const props = defineProps({
   },
 });
 
-const $myemit = defineEmits(["edit", "del", "look"]);
+const $myemit = defineEmits(["look", "pass", "fail"]);
 const look = (id: string) => {
   $myemit("look", id);
 };
-const edit = (id: string) => {
-  $myemit("edit", id);
+const pass = (id: string) => {
+  $myemit("pass", id);
 };
-const del = (id: string) => {
-  $myemit("del", id);
+const fail = (id: string) => {
+  $myemit("fail", id);
 };
 
 const tag = computed(() => {

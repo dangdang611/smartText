@@ -3,7 +3,7 @@
     <div class="head">
       <i></i>
       <h3>头条热榜</h3>
-      <span @click="refreshHot">
+      <span @click="refreshHot()">
         <el-icon>
           <i-ep-Refresh />
         </el-icon>
@@ -20,7 +20,7 @@
           <span v-if="index == 0"
             ><el-icon> <i-ep-Flag /> </el-icon
           ></span>
-          <span v-else>{{ index }}</span>
+          <span v-else>{{ page * 10 + index }}</span>
           {{ hot.title }}
         </li>
       </ul>
@@ -39,8 +39,23 @@ export default {
       hotNews: [],
     });
 
+    let toggle = ref(false);
+    let page = ref(0);
+
     async function refreshHot() {
-      const result = await Api.article.getArticle("/get_hotRank", null, 0, 10);
+      if (!toggle.value) {
+        page.value = 0;
+      } else {
+        page.value = 1;
+      }
+
+      toggle.value = !toggle.value;
+      const result = await Api.article.getArticle(
+        "/get_hotRank",
+        null,
+        page.value,
+        10
+      );
       if (result.code === 200) {
         data.hotNews = result.data;
       } else {
@@ -52,7 +67,7 @@ export default {
     }
 
     function goDetail(newsId: string) {
-      router.push(`/detail?newsId=${newsId}`);
+      router.push(`/detail?articleId=${newsId}`);
     }
 
     onMounted(() => {
@@ -63,6 +78,7 @@ export default {
       data,
       refreshHot,
       goDetail,
+      page,
     };
   },
 };

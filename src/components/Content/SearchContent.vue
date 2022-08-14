@@ -37,10 +37,8 @@ const toSearch = async () => {
     size.value
   );
 
-  if (result.code === "200") {
-    searchResult.NewMessage = result.data.newsMessage;
-    searchResult.VideoMessage = result.data.videoMessage;
-    count.num = result.data.total;
+  if (result.code === 200) {
+    searchResult.NewMessage = result.data;
   } else {
     ElMessage({
       message: result.message,
@@ -65,7 +63,7 @@ onUnmounted(() => {
 .container {
   overflow: hidden;
   width: 100%;
-  background-color: whitesmoke;
+  background-color: #f5f6f7;
 
   .content {
     width: 60%;

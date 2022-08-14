@@ -55,9 +55,12 @@
             <el-menu-item index="4-2">粉丝数据</el-menu-item>
             <el-menu-item index="4-3">收益数据</el-menu-item>
           </el-sub-menu>
-          <el-menu-item index="5">
+          <el-menu-item
+            index="5"
+            :route="{ path: '/editorManage/checkArticle' }"
+          >
             <el-icon><i-ep-Setting /></el-icon>
-            <span class="setting">设置</span>
+            <span class="setting">审核测试功能</span>
           </el-menu-item>
         </el-menu>
       </div>
@@ -97,7 +100,7 @@ const handleClose = (key: string, keyPath: string[]) => {
 <style lang="scss" scoped>
 .editorContainer {
   overflow: hidden;
-  background: whitesmoke;
+  background: #f5f6f7;
   width: 100%;
   height: 720px;
 
@@ -130,7 +133,7 @@ const handleClose = (key: string, keyPath: string[]) => {
     .rightContent {
       flex: 1;
       display: flex;
-      background: whitesmoke;
+      background: #f5f6f7;
     }
   }
 }

@@ -1,11 +1,15 @@
 <template>
-  <div class="itemContainer" @click="goDetail(message.id)">
+  <div class="itemContainer">
     <div class="left">
-      <h3>{{ message.title }}</h3>
+      <h3 @click="goDetail(message.id)">{{ message.title }}</h3>
       <span>{{ message.authorName }}</span>
       <span>{{ message.showNum }} 浏览量</span>
       <span>{{ message.createTime.slice(0, 10) }}</span>
-      <el-icon style="vertical-align: middle" class="close">
+      <el-icon
+        style="vertical-align: middle"
+        class="close"
+        @click="delInfo(message.id)"
+      >
         <i-ep-close />
       </el-icon>
     </div>
@@ -17,10 +21,14 @@
 
 <script lang="ts" setup>
 import { useRouter } from "vue-router";
+import emitter from "../../utils/mitt";
 
 const props = defineProps(["message"]);
 const router = useRouter();
 
+const delInfo = (id: string) => {
+  emitter.emit("delListInfo", id);
+};
 function goDetail(id: string) {
   router.push(`/detail?articleId=${id}`);
 }
@@ -31,6 +39,7 @@ function goDetail(id: string) {
   display: flex;
   margin-bottom: 20px;
   cursor: pointer;
+  animation: appear 0.6s;
 
   &:hover {
     color: #409eff;

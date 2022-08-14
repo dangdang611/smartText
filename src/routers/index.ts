@@ -40,6 +40,10 @@ const routes: Array<RouteRecordRaw> = [
         path: "commentManage",
         component: () => import("../pages/ManagePage/CommentManage.vue"),
       },
+      {
+        path: "checkArticle",
+        component: () => import("../pages/ManagePage/CheckArticle.vue"),
+      },
     ],
     meta: {
       isEditorHeader: true,
@@ -48,6 +52,14 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/editorPage",
     component: () => import("../pages/EditorPage.vue"),
+    meta: {
+      isEditorHeader: true,
+    },
+  },
+  {
+    path: "/publishSuccess",
+    name: "publishSuccess",
+    component: () => import("../pages/Publish.vue"),
     meta: {
       isEditorHeader: true,
     },

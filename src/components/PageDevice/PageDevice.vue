@@ -4,7 +4,7 @@
       background
       layout="prev, pager, next"
       :total="count"
-      :page-size="3"
+      :page-size="4"
       @current-change="currentChange"
     >
     </el-pagination>
@@ -23,16 +23,18 @@ let count = ref(20);
 watch(
   props.count,
   () => {
-    count.value = props.count.num;
+    count.value = props.count.sum;
   },
   { immediate: true }
 );
 
 const currentChange = (currentPage: number) => {
-  if (route.path === "/") {
-    emitter.emit("refreshHomeData", currentPage);
-  } else if (route.path === "/editorManage/productionManage") {
+  if (route.path === "/editorManage/productionManage") {
     emitter.emit("refreshProductionData", currentPage);
+  } else if (route.path === "/editorManage/commentManage") {
+    emitter.emit("refreshCommentData", currentPage);
+  } else if (route.path === "/editorManage/checkArticle") {
+    emitter.emit("refreshCheckData  ", currentPage);
   }
 };
 </script>

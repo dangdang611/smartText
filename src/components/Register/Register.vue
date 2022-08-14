@@ -303,7 +303,7 @@ async function sendSend() {
 }
 
 /* 深层穿透 */
-.demo-ruleForm >>> .el-form-item__label {
+.demo-ruleForm :deep(.el-form-item__label) {
   color: #131313;
   font-weight: 700;
 }

@@ -1,5 +1,6 @@
 import { base } from "./base";
 import Request from "../utils/request";
+import qs from "qs";
 
 export default class Article {
   static article = new Request({
@@ -10,17 +11,18 @@ export default class Article {
   static insertArticle(data: object) {
     return Article.article
       .request({
-        url: "/insertArticle",
+        url: "/insert_article",
         method: "PUT",
-        data: {
-          data,
-        },
+        data: qs.stringify(data),
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
       })
       .then(
         (value) => {
+          console.log(value);
           return value;
         },
         (reason) => {
+          console.log(reason);
           return reason;
         }
       );
@@ -30,8 +32,8 @@ export default class Article {
   static getArticle(
     path: string,
     userId: string | null,
-    page: number,
-    size: number
+    page: number = 0,
+    size: number = 0
   ) {
     return Article.article
       .request({
@@ -119,13 +121,13 @@ export default class Article {
   }
 
   // 删除文章
-  static delAticle(newsId: string) {
+  static delAticle(articleId: string) {
     return Article.article
       .request({
-        url: "/delAticle",
-        method: "DELETE",
+        url: "/del_articel",
+        method: "GET",
         params: {
-          newsId,
+          articleId,
         },
       })
       .then(
@@ -141,7 +143,7 @@ export default class Article {
   static searchArticle(keyword: string, page: number, size: number) {
     return Article.article
       .request({
-        url: "/searchArticle",
+        url: "/get_search",
         method: "GET",
         params: {
           keyword,
@@ -168,6 +170,26 @@ export default class Article {
         params: {
           id,
           isAdd,
+        },
+      })
+      .then(
+        (value) => {
+          return value;
+        },
+        (reason) => {
+          return reason;
+        }
+      );
+  }
+
+  // 搜索自动补全
+  static autoComplete(keyword: string) {
+    return Article.article
+      .request({
+        url: "/get_autoComplete",
+        method: "GET",
+        params: {
+          keyword,
         },
       })
       .then(

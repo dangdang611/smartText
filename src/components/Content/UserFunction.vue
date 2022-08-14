@@ -57,15 +57,15 @@ export default {
     }
 
     async function getCountUser() {
-      const result = await Api.user.getUserData(
+      const result = await Api.user.getUserCount(
         JSON.parse(localStorage.getItem("user_info") || "{}").userId
       );
       if (result.code === 200) {
-        console.log(result.data);
-        const { likeNum, fansNum, attentionNum } = result.data;
-        data.likeNum = likeNum;
-        data.fansNum = fansNum;
-        data.attentionNum = attentionNum;
+        ({
+          likeNum: data.likeNum,
+          fansNum: data.fansNum,
+          attentionNum: data.attentionNum,
+        } = result.data);
       } else {
         ElMessage({
           message: result.message,

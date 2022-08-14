@@ -8,18 +8,18 @@
         @select="handleSelect"
       >
         <el-menu-item disabled>状态</el-menu-item>
-        <el-menu-item index="2">已发布</el-menu-item>
-        <el-menu-item index="3">审核中</el-menu-item>
-        <el-menu-item index="4">未通过</el-menu-item>
+        <el-menu-item index="2">待审核</el-menu-item>
+        <el-menu-item index="3">已完成</el-menu-item>
+        <el-menu-item index="4">已否决</el-menu-item>
       </el-menu>
     </template>
     <template v-slot:content>
-      <ArticleItem
+      <CheckItem
         v-for="item of currentData"
         :key="item.id"
         :item="item"
-        @edit="editProduction"
-        @del="delProduction"
+        @pass="passArticle"
+        @fail="failArticle"
         @look="lookDetail"
       />
     </template>
@@ -73,13 +73,13 @@ const handleSelect = (index: string) => {
   activeIndex.value = index;
   switch (index) {
     case "2": {
-      currentData.value = data.publish;
-      count.sum = data.publishNum;
+      currentData.value = data.checking;
+      count.sum = data.checkingNum;
       break;
     }
     case "3": {
-      currentData.value = data.checking;
-      count.sum = data.checkingNum;
+      currentData.value = data.publish;
+      count.sum = data.publishNum;
       break;
     }
     case "4": {
@@ -90,13 +90,21 @@ const handleSelect = (index: string) => {
   }
 };
 
-const editProduction = (id: string) => {
-  router.push({
-    path: "/editorPage",
-    query: {
-      articleId: id,
-    },
-  });
+const passArticle = async (id: string) => {
+  let result = await Api.checking_article.passAticle(id);
+  if (result.code == 200) {
+    ElMessage({
+      type: "success",
+      message: "审核通过",
+    });
+  } else {
+    ElMessage({
+      type: "error",
+      message: "操作失败",
+    });
+  }
+  // 重新获取数据
+  getAllData();
 };
 
 const lookDetail = (id: string) => {
@@ -110,11 +118,10 @@ const lookDetail = (id: string) => {
 const getAllData = async () => {
   const result = await Api.article.getArticle(
     "/get_myArticle",
-    JSON.parse(localStorage.getItem("user_info") || "{}").userId,
+    null,
     page.value,
     size.value
   );
-
   if (result.code === 200) {
     ({
       publish: data.publish,
@@ -133,41 +140,33 @@ const getAllData = async () => {
 
   handleSelect(activeIndex.value);
 };
-const delProduction = async (id: string) => {
-  let result;
-  switch (activeIndex.value) {
-    case "2": {
-      result = await Api.article.delAticle(id);
-      break;
-    }
-    case "3": {
-      result = await Api.checking_article.delAticle(id);
-      break;
-    }
-    case "4": {
-      result = await Api.fail_article.delAticle(id);
-      break;
-    }
+const failArticle = async (id: string) => {
+  let result = await Api.checking_article.failAticle(id);
+  if (result.code == 200) {
+    ElMessage({
+      type: "success",
+      message: "操作成功",
+    });
+  } else {
+    ElMessage({
+      type: "error",
+      message: "操作失败",
+    });
   }
-
-  ElMessage({
-    message: result.data ? "删除成功" : "删除失败",
-    type: result.data ? "success" : "warning",
-  });
 
   // 重新获取数据
   getAllData();
 };
 onMounted(() => {
   getAllData();
-  emitter.on("refreshProductionData", (currentPage) => {
+  emitter.on("refreshCheckData", (currentPage) => {
     page.value = (currentPage as number) - 1;
     handleSelect(activeIndex.value);
   });
 });
 
 onUnmounted(() => {
-  emitter.off("refreshProductionData");
+  emitter.off("refreshCheckData");
 });
 </script>
 

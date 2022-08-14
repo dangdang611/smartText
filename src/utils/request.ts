@@ -18,10 +18,12 @@ class Request {
     this.axiosInstance.interceptors.request.use(
       (config) => {
         // 配置请求头
-        config.headers = {
-          //'Content-Type':'application/x-www-form-urlencoded',   // 传参方式表单
-          "Content-Type": "application/json;charset=UTF-8", // 传参方式json
-        };
+        if (!config.headers) {
+          config.headers = {
+            // "Content-Type": "application/x-www-form-urlencoded", // 传参方式表单
+            "Content-Type": "application/json;charset=UTF-8", // 传参方式json
+          };
+        }
 
         if (Cookies.get("smartToken")) {
           // 传的是token

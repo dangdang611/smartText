@@ -1,12 +1,21 @@
 <template>
   <div class="commentItem">
-    <div><el-avatar :src="comment.userAvatar" /></div>
+    <div><el-avatar :src="comment.avatarUrl" /></div>
     <div>
-      <span>{{ comment.userCount }}</span>
-      <span>{{ comment.content }}</span>
-      <div>
-        <span>回复</span>
-        <span>{{ comment.time }}</span>
+      <span>{{ comment.userName }}</span>
+      <div class="content">
+        <span id="targetComment" v-if="comment.targetName">
+          <span>回复</span>
+          <span>{{ comment.targetName }}</span
+          >:
+        </span>
+        <span>{{ comment.content }}</span>
+      </div>
+      <div class="bottom">
+        <span @click="replyComment(comment.userId, comment.userName)"
+          >回复</span
+        >
+        <span>{{ comment.createTime.slice(0, 10) }}</span>
       </div>
     </div>
     <div :class="isLike ? 'active' : ''">
@@ -20,12 +29,16 @@
 
 <script lang="ts" setup>
 const props = defineProps(["comment"]);
-const $myemit = defineEmits(["getLike"]);
+const $myemit = defineEmits(["getLike", "replyComment"]);
 let isLike = ref(false);
 
 function getLike() {
   isLike.value = !isLike.value;
   $myemit("getLike", props.comment.id, Number(isLike.value));
+}
+
+function replyComment(targetId: string, targetName: string) {
+  $myemit("replyComment", targetId, targetName);
 }
 </script>
 
@@ -37,6 +50,7 @@ function getLike() {
   > div:nth-child(1) {
     width: 17%;
   }
+
   > div:nth-child(2) {
     flex: 1;
     display: flex;
@@ -44,18 +58,31 @@ function getLike() {
 
     > span {
       margin-bottom: 8px;
-
-      &:nth-child(1) {
-        font-size: 14px;
-      }
+      color: #7aaee4;
     }
 
-    > div {
+    .content #targetComment {
+      > span:nth-child(1) {
+        margin-right: 3px;
+        font-size: 14px;
+      }
+      > span:nth-child(2) {
+        color: #7aaee4;
+      }
+    }
+    .bottom {
+      display: flex;
+      justify-content: space-between;
       margin-top: 8px;
       font-size: 12px;
       color: #999;
+
+      > span:nth-child(1) {
+        cursor: pointer;
+      }
     }
   }
+
   > div:nth-child(3) {
     width: 20%;
     span:nth-child(1) {

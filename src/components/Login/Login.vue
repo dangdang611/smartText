@@ -102,6 +102,7 @@ function submitForm(formName: FormInstance | undefined) {
           userId: result.data.userId,
           userCount: result.data.userCount,
           userAvatar: result.data.userAvatar,
+          userName: result.data.userName,
         };
 
         localStorage.setItem("user_info", JSON.stringify(user_info));
@@ -201,7 +202,7 @@ function resetForm(formName: FormInstance | undefined) {
   cursor: pointer;
 }
 /* 深层穿透 */
-.demo-ruleForm >>> .el-form-item__label {
+.demo-ruleForm :deep(.el-form-item__label) {
   color: #131313;
   font-weight: 700;
 }

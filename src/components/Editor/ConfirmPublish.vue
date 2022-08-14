@@ -8,8 +8,13 @@
         </el-icon>
       </div>
       <div class="content">
-        <el-form :model="form" label-width="100px" ref="ruleFormRef">
-          <el-form-item label="编辑标题">
+        <el-form
+          :model="form"
+          label-width="100px"
+          ref="ruleFormRef"
+          :rules="rules"
+        >
+          <el-form-item label="编辑标题" prop="title">
             <el-input
               v-model="form.title"
               placeholder="请编辑您的标题"
@@ -20,7 +25,7 @@
             ></el-form-item
           >
           <el-form-item label="分类">
-            <el-radio-group v-model="tag1" size="large" required>
+            <el-radio-group v-model="tag1" size="large">
               <el-radio label="社会" border>社会</el-radio>
               <el-radio label="娱乐" border>娱乐</el-radio>
               <el-radio label="体育" border>体育</el-radio>
@@ -31,8 +36,8 @@
               <el-radio label="其他" border>其他</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="添加标签">
-            <el-select v-model="tag2" placeholder="添加您的标签">
+          <el-form-item label="添加标签" prop="tag">
+            <el-select v-model="form.tag" placeholder="添加您的标签">
               <el-option label="科技" value="科技" />
               <el-option label="时尚" value="时尚" />
               <el-option label="美食" value="美食" />
@@ -43,7 +48,7 @@
               <el-option label="历史" value="历史" />
             </el-select>
           </el-form-item>
-          <el-form-item label="文章封面">
+          <el-form-item label="文章封面" prop="coverPic">
             <el-upload
               action="#"
               list-type="picture-card"
@@ -103,7 +108,7 @@
               <el-option label="历史" value="历史" />
             </el-select>
           </el-form-item>
-          <el-form-item label="编辑摘要">
+          <el-form-item label="编辑摘要" prop="digest">
             <el-input
               v-model="form.digest"
               :rows="4"
@@ -151,10 +156,11 @@
 
 <script lang="ts" setup>
 import { Delete, Download, ZoomIn } from "@element-plus/icons-vue";
-import axios from "axios";
-import type { FormInstance, UploadFile } from "element-plus";
+import { FormInstance, FormRules, UploadFile, ElMessage } from "element-plus";
+import { useRouter } from "vue-router";
 import Api from "../../Api";
 
+const router = useRouter();
 const dialogImageUrl = ref("");
 const dialogVisible = ref(false);
 const disabled = ref(false);
@@ -162,14 +168,12 @@ const ruleFormRef = ref<FormInstance>();
 
 const $myemit = defineEmits(["close"]);
 const props = defineProps(["data"]);
-const { ctx } = getCurrentInstance();
 
 let isSmartTitle = ref(false);
 let isSmartDigest = ref(false);
 
 const fileList = ref([]);
 let tag1 = ref("");
-let tag2 = ref("");
 
 let form = reactive({
   title: "",
@@ -178,13 +182,25 @@ let form = reactive({
   specialColumn: "",
   digest: "",
   content: "",
+  mdContent: "",
   time: "",
-  author: "",
+  authorId: "",
+  authorName: "",
+});
+
+const rules = reactive<FormRules>({
+  title: { required: true, message: "标题不能为空", trigger: "blur" },
+  coverPic: { required: true, message: "请上传一张封面", trigger: "blur" },
+  digest: { required: true, message: "摘要不能为空", trigger: "blur" },
+  tag: { required: true, message: "请选择一个标签", trigger: "blur" },
 });
 
 watch(props.data, () => {
-  form.title = props.data.title;
-  form.content = props.data.mdContext;
+  ({
+    title: form.title,
+    content: form.content,
+    mdContent: form.mdContent,
+  } = props.data);
 });
 
 function close() {
@@ -214,22 +230,30 @@ const resetForm = (formEl: FormInstance | undefined) => {
 
 const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
+  if (form.content == "") {
+    ElMessage({
+      message: "内容不能为空！",
+      type: "error",
+    });
+    return;
+  }
   formEl.validate(async (valid) => {
     if (valid) {
       // 处理数据
-      let date = new Date();
-      form.tag = [tag1.value, tag2.value];
-      form.time = date.toLocaleDateString();
-      form.author = localStorage.getItem("count")!;
+      if (tag1.value) form.tag = [form.tag as unknown as string, tag1.value];
+      let user = JSON.parse(localStorage.getItem("user_info") || "{}");
+      form.authorId = user.userId;
+      form.authorName = user.userName;
 
-      const result = await Api.article.insertArticle(form);
-      console.log(form);
+      const result = await Api.checking_article.publicArticle(form);
+      const articleId = result.data.id;
 
-      if (result.code === "200") {
+      if (result.code === 200) {
         close();
-        ElMessage({
-          message: "发表成功，正在审核中",
-          type: "success",
+        resetForm(formEl);
+        router.replace({
+          name: "publishSuccess",
+          params: { articleId },
         });
       } else {
         ElMessage({
@@ -238,7 +262,6 @@ const submitForm = (formEl: FormInstance | undefined) => {
         });
       }
     } else {
-      console.log("error submit!");
       return false;
     }
   });
@@ -261,23 +284,16 @@ const uploadFile = async (params: { file: any }) => {
   }
 
   // 发起请求
-  await axios({
-    url: "http://101.35.194.184:8080/club/fileupload/pic.do", //请求地址
-    method: "POST",
-    data: formData,
-    headers: { "Content-Type": "multipart/form-data" },
-  }).then((res) => {
-    if (res.status === 200) {
-      // 将后端返回的url保存
-      form.coverPic = res.data.data;
-      console.log(res.data.data);
-    } else {
-      ElMessage({
-        message: "上传失败",
-        type: "warning",
-      });
-    }
-  });
+  let result = await Api.resource.uploadPic(formData);
+  if (result.status == 200) {
+    // 将后端返回的url保存
+    form.coverPic = result.data;
+  } else {
+    ElMessage({
+      message: "上传失败",
+      type: "warning",
+    });
+  }
 };
 
 const handleRemove = (file: UploadFile) => {
@@ -305,7 +321,7 @@ const handleDownload = (file: UploadFile) => {
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.05);
-  z-index: 2000;
+  z-index: 1998;
 
   .publishContent {
     position: absolute;
