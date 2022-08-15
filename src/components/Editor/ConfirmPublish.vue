@@ -139,7 +139,7 @@
         v-show="isSmartTitle"
         @close="closeSmartTitle"
         @sendTitle="receiveTitle"
-        :data="props.data.context"
+        :data="props.data.mdContent"
       />
     </transition>
 
@@ -148,7 +148,7 @@
         v-show="isSmartDigest"
         @close="closeSmartDigest"
         @sendDigest="receiveDigest"
-        :data="props.data.context"
+        :data="props.data.mdContent"
       />
     </transition>
   </div>
@@ -245,7 +245,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
       form.authorId = user.userId;
       form.authorName = user.userName;
 
-      const result = await Api.checking_article.publicArticle(form);
+      const result = await Api.checking_article.publishArticle(form);
       const articleId = result.data.id;
 
       if (result.code === 200) {

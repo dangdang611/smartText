@@ -48,6 +48,7 @@
       <div class="top">
         <el-avatar size="large" :src="userInfo.userAvatar"> user </el-avatar>
         <span class="name">{{ userInfo.userName }}</span>
+        <el-button type="primary" text bg @click="editInfo">编辑</el-button>
       </div>
       <el-divider content-position="left">个人成就</el-divider>
       <ul class="bottom">
@@ -83,29 +84,58 @@
       </ul>
     </div>
   </div>
+
+  <el-dialog v-model="dialogVisible" title="Tips" width="30%" draggable>
+    <div class="edit">
+      <el-upload
+        class="avatar-uploader"
+        :http-request="uploadFile"
+        :on-remove="handleRemove"
+      >
+        <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+        <el-icon v-else class="avatar-uploader-icon"><i-ep-Plus /></el-icon>
+      </el-upload>
+      <el-input
+        v-model="userName"
+        placeholder="昵称"
+        maxlength="10"
+        show-word-limit
+      />
+    </div>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="editSubmit">保存</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script lang="ts" setup>
-import { ElMessage } from "element-plus";
+import {
+  ElMessage,
+  ElMessageBox,
+  UploadProps,
+  UploadUserFile,
+} from "element-plus";
 import * as echarts from "echarts";
 import Api from "../../Api";
+import emitter from "../../utils/mitt";
+import { WeeksDate } from "../../utils/WeeksDate";
 
 let userInfo = reactive({
   userAvatar: "",
   userName: "",
   userId: "",
+  userCount: "",
   writeNum: "",
   fansNum: "",
   showNum: "",
 });
 
-//取出用户有关数据
-let data = JSON.parse(localStorage.getItem("user_info") || "{}");
-({
-  userAvatar: userInfo.userAvatar,
-  userName: userInfo.userName,
-  userId: userInfo.userId,
-} = data);
+let userName = ref("");
+const imageUrl = ref("");
+let dialogVisible = ref(false);
 
 let viewData = reactive({
   showAddNums: [12, 19, 21, 1, 3, 23, 12],
@@ -261,7 +291,21 @@ function drawLine() {
   myChart.setOption(option);
 }
 const getUserData = async () => {
-  let result = await Api.user.getUserData(userInfo.userId);
+  //取出用户有关数据
+  let data = JSON.parse(localStorage.getItem("user_info") || "{}");
+  ({
+    userAvatar: userInfo.userAvatar,
+    userName: userInfo.userName,
+    userId: userInfo.userId,
+    userCount: userInfo.userCount,
+  } = data);
+
+  userName.value = data.userName;
+  imageUrl.value = data.userAvatar;
+
+  //获取用户相关的统计数据
+  let result = await Api.user.getUserCount(userInfo.userId);
+  console.log(result);
   if (result.code === 200) {
     ({
       fansNum: userInfo.fansNum,
@@ -275,6 +319,7 @@ const getUserData = async () => {
     });
   }
 };
+
 const getDrawData = async () => {
   const result = await Api.user.getUserWeekData(userInfo.userId);
   if (result.code === 200) {
@@ -282,12 +327,14 @@ const getDrawData = async () => {
     for (const key in result.data) {
       viewData[key] = result.data[key];
     }
-    console.log(viewData);
 
     // 处理数据格式
     for (let i = 0; i < 7; i++) {
       sourceData.value[i] = {
-        product: "6/" + (1 + i),
+        product: new WeeksDate()
+          .getPreDays(7 - i)
+          .toString()
+          .slice(6, 10),
         新增粉丝: viewData.fansAddNums[i],
         新增点赞: viewData.likeAddNums[i],
         新增浏览量: viewData.showAddNums[i],
@@ -302,9 +349,79 @@ const getDrawData = async () => {
   drawLine();
 };
 
+const editInfo = () => {
+  dialogVisible.value = true;
+};
+
+const editSubmit = async () => {
+  if (userName.value.length < 1 || userName.value.length > 10) {
+    ElMessage({
+      type: "error",
+      message: "昵称不能为空",
+    });
+    return;
+  }
+  dialogVisible.value = false;
+
+  let user = {
+    userName: userName.value,
+    userAvatar: imageUrl.value,
+  };
+  let result = await Api.user.updated(user);
+  if (result.code == 200) {
+    ElMessage({
+      type: "success",
+      message: "修改成功",
+    });
+    // 刷新数据
+    let userData = JSON.parse(localStorage.getItem("user_info") || "{}");
+    userData = { ...userData, ...user };
+    localStorage.setItem("user_info", JSON.stringify(userData));
+    emitter.emit("refreshHeader");
+    getUserData();
+  } else {
+    ElMessage({
+      type: "error",
+      message: "修改失败，请重试",
+    });
+  }
+};
+const uploadFile = async (params: { file: any }) => {
+  const _file = params.file;
+  const isLt2M = _file.size / 1024 / 1024 < 2;
+
+  // 通过 FormData 对象上传文件
+  var formData = new FormData();
+  formData.append("pic", _file);
+
+  if (!isLt2M) {
+    ElMessage({
+      message: "请上传2M以下的图片",
+      type: "warning",
+    });
+    return false;
+  }
+
+  // 发起请求
+  let result = await Api.resource.uploadPic(formData);
+  if (result.status == 200) {
+    // 将后端返回的url保存
+    imageUrl.value = result.data;
+  } else {
+    ElMessage({
+      message: "上传失败",
+      type: "warning",
+    });
+  }
+};
+
+const handleRemove = () => {
+  imageUrl.value = "";
+};
+
 onMounted(async () => {
-  getDrawData();
   getUserData();
+  getDrawData();
 });
 </script>
 
@@ -402,6 +519,7 @@ onMounted(async () => {
 
       .name {
         margin-left: 10px;
+        margin-right: 15px;
         font-size: 16px;
         font-weight: 700;
       }
@@ -439,6 +557,44 @@ onMounted(async () => {
         margin-left: 10px;
       }
     }
+  }
+}
+
+.edit {
+  overflow: hidden;
+
+  :deep(.avatar-uploader) {
+    margin-bottom: 10px;
+    text-align: center;
+    .avatar {
+      width: 178px;
+      height: 178px;
+      display: block;
+    }
+  }
+
+  :deep(.avatar-uploader .el-upload) {
+    border: 1px dashed #bbb;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: var(--el-transition-duration-fast);
+  }
+
+  :deep(.avatar-uploader .el-upload:hover) {
+    border-color: #409eff !important;
+  }
+
+  :deep(.el-upload-list) {
+    display: none;
+  }
+  .el-icon.avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    text-align: center;
   }
 }
 </style>

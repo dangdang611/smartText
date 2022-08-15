@@ -6,7 +6,6 @@ import '@vue/runtime-core'
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     ArticleItem: typeof import('./components/Management/ArticleItem.vue')['default']
-    'ArticleItem copy': typeof import('./components/Management/ArticleItem copy.vue')['default']
     CheckItem: typeof import('./components/Management/CheckItem.vue')['default']
     Comment: typeof import('./components/Comment/Comment.vue')['default']
     CommentItem: typeof import('./components/Comment/CommentItem.vue')['default']

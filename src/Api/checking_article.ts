@@ -8,7 +8,7 @@ export default class CheckingArticle {
   });
 
   //发布资讯
-  static publicArticle(data: object) {
+  static publishArticle(data: object) {
     return CheckingArticle.article
       .request({
         url: "/publish_article",

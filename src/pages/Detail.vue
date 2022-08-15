@@ -102,7 +102,6 @@
 </template>
 
 <script lang="ts" setup>
-import { Ref } from "vue";
 import { useRoute } from "vue-router";
 import Api from "../Api";
 
@@ -205,7 +204,11 @@ async function getAuthorInfo() {
 
 async function getLike() {
   isLike.value = !isLike.value;
-  let result = await Api.article.getLike(path, Number(isLike.value));
+  let result = await Api.article.getLike(
+    path,
+    JSON.parse(localStorage.getItem("user_info") || "{}").userId,
+    Number(isLike.value)
+  );
   if (result.code == 200) {
     // 刷新数据,获取文章信息
     getDetail();
@@ -238,9 +241,20 @@ async function attention() {
   //刷新页面
   getDetail();
 }
+
+async function getLikeStatus() {
+  //获取文章点赞状态
+  let res = await Api.like.isLike(
+    JSON.parse(localStorage.getItem("user_info") || "{}").userId,
+    path
+  );
+  isLike.value = res.data;
+}
 onMounted(() => {
   //获取文章详细信息
   getDetail();
+  getLikeStatus();
+  Api.article.addShowNum(path);
 });
 </script>
 
@@ -327,7 +341,6 @@ onMounted(() => {
   top: 12%;
   left: 50%;
   margin-left: 31%;
-  z-index: 9999;
   display: flex;
   flex-direction: column;
   justify-content: center;

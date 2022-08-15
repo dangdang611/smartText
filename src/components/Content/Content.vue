@@ -136,7 +136,8 @@ onMounted(() => {
     ) {
       isAchiveBottom.value = true;
       isload.value = true; //开始加载
-      //延时触发数据加载
+
+      //延时触发数据加载,节流操作
       setTimeout(() => {
         page.value += 1;
         getMessage();

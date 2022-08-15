@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "cm": "git-cz"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.0.5",

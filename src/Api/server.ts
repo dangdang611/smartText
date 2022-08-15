@@ -92,6 +92,25 @@ export default class User {
       );
   }
 
+  //修改用户
+  static updated(user: User) {
+    return User.user
+      .request({
+        url: "/user/update_user",
+        method: "POST",
+        data: user,
+      })
+      .then(
+        (value) => {
+          console.log(value);
+          return value;
+        },
+        (reason) => {
+          console.log(reason);
+          return reason;
+        }
+      );
+  }
   // 获取验证码
   static getCode({ userCount }: { userCount: String }) {
     return User.user

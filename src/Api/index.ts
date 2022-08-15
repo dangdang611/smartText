@@ -6,6 +6,7 @@ import ai from "./ai";
 import checking_article from "./checking_article";
 import fail_article from "./fail_article";
 import attention from "./attention";
+import like from "./like";
 // 导出接口
 export default {
   article,
@@ -16,4 +17,5 @@ export default {
   checking_article,
   fail_article,
   attention,
+  like,
 };

@@ -162,13 +162,14 @@ export default class Article {
   }
 
   //文章点赞
-  static getLike(id: string, isAdd: number) {
+  static getLike(id: string, userId: string, isAdd: number) {
     return Article.article
       .request({
         url: "/giveLike_article",
         method: "GET",
         params: {
           id,
+          userId,
           isAdd,
         },
       })
@@ -190,6 +191,26 @@ export default class Article {
         method: "GET",
         params: {
           keyword,
+        },
+      })
+      .then(
+        (value) => {
+          return value;
+        },
+        (reason) => {
+          return reason;
+        }
+      );
+  }
+
+  //浏览量加1
+  static addShowNum(articleId: string) {
+    return Article.article
+      .request({
+        url: "/add_showNum",
+        method: "GET",
+        params: {
+          articleId,
         },
       })
       .then(
