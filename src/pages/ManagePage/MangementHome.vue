@@ -2,10 +2,7 @@
   <div class="left">
     <div class="items">
       <div>
-        <img
-          src="https://mapapi.qq.com/web/lbs/console/v/images/todo_order.f979f04.png"
-          alt=""
-        />
+        <img :src="bgimg[0]" alt="" />
         <h4>今日新增粉丝</h4>
         <h3>
           {{ viewData.fansAddNums[viewData.fansAddNums.length - 1] }}
@@ -13,10 +10,7 @@
         <h6>总粉丝数：{{ viewData.fansNums }}</h6>
       </div>
       <div>
-        <img
-          src="	https://mapapi.qq.com/web/lbs/console/v/images/todo_ticket.fee2f74.png"
-          alt=""
-        />
+        <img :src="bgimg[1]" alt="" />
         <h4>今日新增点赞</h4>
         <h3>
           {{ viewData.likeAddNums[viewData.likeAddNums.length - 1] }}
@@ -24,10 +18,7 @@
         <h6>总点赞数：{{ viewData.likeNums }}</h6>
       </div>
       <div>
-        <img
-          src="https://mapapi.qq.com/web/lbs/console/v/images/todo_monitor.dd6ad34.png"
-          alt=""
-        />
+        <img :src="bgimg[2]" alt="" />
         <h4>今日新增浏览量</h4>
         <h3>
           {{ viewData.showAddNums[viewData.showAddNums.length - 1] }}
@@ -132,7 +123,11 @@ let userInfo = reactive({
   fansNum: "",
   showNum: "",
 });
-
+let bgimg = [
+  "https://mapapi.qq.com/web/lbs/console/v/images/todo_order.f979f04.png",
+  "	https://mapapi.qq.com/web/lbs/console/v/images/todo_ticket.fee2f74.png",
+  "https://mapapi.qq.com/web/lbs/console/v/images/todo_monitor.dd6ad34.png",
+];
 let userName = ref("");
 const imageUrl = ref("");
 let dialogVisible = ref(false);
@@ -325,7 +320,14 @@ const getDrawData = async () => {
   if (result.code === 200) {
     // 获取并更新七天的数据
     for (const key in result.data) {
-      viewData[key] = result.data[key];
+      ({
+        showAddNums: viewData.showAddNums,
+        showNums: viewData.showNums,
+        fansAddNums: viewData.fansAddNums,
+        fansNums: viewData.fansNums,
+        likeAddNums: viewData.likeAddNums,
+        likeNums: viewData.likeNums,
+      } = result.data);
     }
 
     // 处理数据格式

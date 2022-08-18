@@ -50,7 +50,7 @@ class Request {
   }
 
   // 请求方法
-  public request<T = any>(
+  public request<T>(
     config: AxiosRequestConfig
   ): Promise<AxiosResponse<Result<T>>> {
     return this.axiosInstance.request(config);

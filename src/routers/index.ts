@@ -17,13 +17,6 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
-    path: "/mavonEditor",
-    component: () => import("../pages/MavonEditor.vue"),
-    meta: {
-      isInitHeader: false,
-    },
-  },
-  {
     path: "/editorManage",
     component: () => import("../pages/EditorManage.vue"),
     redirect: "/editorManage/home",

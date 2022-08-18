@@ -29,6 +29,7 @@ import CommentItem from "../../components/Management/CommentItem.vue";
 import Api from "../../Api";
 import { Ref } from "vue";
 import emitter from "../../utils/mitt";
+import { ElMessage } from "element-plus";
 
 interface Comment {
   id: string;

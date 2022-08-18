@@ -48,6 +48,7 @@
 </template>
 
 <script lang="ts" setup>
+import { ElMessage } from "element-plus";
 import { keys, values } from "lodash";
 import Api from "../../Api";
 

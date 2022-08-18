@@ -11,6 +11,7 @@
 </template>
 
 <script lang="ts" setup>
+import { ElMessage } from "element-plus";
 import Api from "../../Api";
 import emitter from "../../utils/mitt";
 let page = ref(1);

@@ -29,6 +29,7 @@
 </template>
 
 <script lang="ts">
+import { ElMessage } from "element-plus";
 import { useRouter } from "vue-router";
 import Api from "../../Api";
 

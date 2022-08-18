@@ -31,13 +31,13 @@
 </template>
 
 <script lang="ts" setup>
+import { ElMessage } from "element-plus";
 import { useRoute } from "vue-router";
 import Api from "../Api";
 import ConfirmPublish from "../components/Editor/ConfirmPublish.vue";
 
-const { ctx } = getCurrentInstance();
 const route = useRoute();
-
+const editor = ref(null);
 let data = reactive({
   title: "",
   content: "",
@@ -87,7 +87,7 @@ async function addImg(pos: string, $file: string) {
   formData.append("pic", $file);
   let result = await Api.resource.uploadPic(formData);
   if (result.status == 200) {
-    ctx.$refs.editor.$img2Url(pos, result.data);
+    editor.$img2Url(pos, result.data);
   } else {
     ElMessage({
       message: "上传失败",
