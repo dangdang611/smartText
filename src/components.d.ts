@@ -50,7 +50,6 @@ declare module '@vue/runtime-core' {
     IEpHistogram: typeof import('~icons/ep/histogram')['default']
     IEpHomeFilled: typeof import('~icons/ep/home-filled')['default']
     IEpPlus: typeof import('~icons/ep/plus')['default']
-    IEpPosition: typeof import('~icons/ep/position')['default']
     IEpRefresh: typeof import('~icons/ep/refresh')['default']
     IEpSearch: typeof import('~icons/ep/search')['default']
     IEpSetting: typeof import('~icons/ep/setting')['default']

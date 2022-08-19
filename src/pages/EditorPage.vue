@@ -32,7 +32,7 @@
 
 <script lang="ts" setup>
 import { ElMessage } from "element-plus";
-import { useRoute } from "vue-router";
+import { onBeforeRouteLeave, useRoute } from "vue-router";
 import Api from "../Api";
 import ConfirmPublish from "../components/Editor/ConfirmPublish.vue";
 

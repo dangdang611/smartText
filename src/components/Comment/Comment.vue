@@ -80,11 +80,6 @@ async function getComment() {
   if (result.code === 200) {
     data.commentNum = result.data[1];
     data.comments = result.data[0];
-  } else {
-    ElMessage({
-      message: result.message,
-      type: "warning",
-    });
   }
 
   //同步父页数据

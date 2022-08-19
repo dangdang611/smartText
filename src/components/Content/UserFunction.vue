@@ -66,11 +66,6 @@ export default {
           fansNum: data.fansNum,
           attentionNum: data.attentionNum,
         } = result.data);
-      } else {
-        ElMessage({
-          message: result.message,
-          type: "warning",
-        });
       }
     }
 

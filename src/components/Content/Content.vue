@@ -3,7 +3,7 @@
     <div class="leftContent">
       <div class="recommend">
         <el-menu
-          default-active="/get_attentionArticle"
+          default-active="/get_newArticle"
           class="el-menu-demo"
           mode="horizontal"
           @select="toggle"
@@ -18,11 +18,12 @@
       <div class="content">
         <NewsList :NewMessage="NewMessage"></NewsList>
         <div class="tips">
-          <div class="loadTips" v-if="!NewMessage.length && isMore">
+          <div v-if="!NewMessage.length && isMore && !isError">
             暂时没有，去看看别的吧
           </div>
-          <div class="loadTips" v-if="!isMore">不要再划啦，已经见底了~~</div>
-          <div class="loadTips" v-loading="isMore && !isload"></div>
+          <div v-if="!isMore">不要再划啦，已经见底了~~</div>
+          <div v-loading="isMore && !isload"></div>
+          <div v-if="isError">请先登录</div>
         </div>
       </div>
     </div>
@@ -38,7 +39,6 @@
 </template>
 
 <script lang="ts" setup>
-import { ElMessage } from "element-plus";
 import { Ref } from "vue";
 import Api from "../../Api";
 import emitter from "../../utils/mitt";
@@ -67,10 +67,12 @@ let isAchiveBottom = ref(false);
 let isMore = ref(true);
 //是否加载成功
 let isload = ref(false);
+//是否获取到数据
+let isError = ref(false);
 
 let hotNews = ref();
 
-let currentPath = ref("/get_attentionArticle");
+let currentPath = ref("/get_newArticle");
 const userId = JSON.parse(localStorage.getItem("user_info") || "{}").userId;
 
 let NewMessage: Ref<article[]> = ref([]);
@@ -92,16 +94,15 @@ async function getMessage() {
   );
 
   if (result.code === 200) {
+    isError.value = false;
     if (!result.data.length) {
       isMore.value = false;
     } else {
       NewMessage.value = [...NewMessage.value, ...result.data];
     }
   } else {
-    ElMessage({
-      message: result.message,
-      type: "warning",
-    });
+    isError.value = true;
+    isload.value = true;
   }
 }
 
@@ -200,10 +201,8 @@ onUnmounted(() => {
       padding: 20px 30px;
       .tips {
         margin-top: 50px;
-        .loadTips {
-          text-align: center;
-          color: #999;
-        }
+        text-align: center;
+        color: #999;
       }
     }
   }

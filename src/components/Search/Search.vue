@@ -108,7 +108,6 @@ watch(state, () => {
 });
 
 onMounted(() => {
-  loadAll(state.value);
   refreshTop();
 
   timer = setInterval(() => {

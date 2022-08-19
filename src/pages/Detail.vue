@@ -193,11 +193,12 @@ async function getAuthorInfo() {
     data.author = result.data;
   }
 
-  let attentionUsers = (
-    await Api.attention.getAttention(
-      JSON.parse(localStorage.getItem("user_info") || "{}").userId
-    )
-  ).data;
+  let attentionUsers =
+    (
+      await Api.attention.getAttention(
+        JSON.parse(localStorage.getItem("user_info") || "{}").userId
+      )
+    ).data || [];
 
   if (attentionUsers.includes(data.info.authorId)) isAttention.value = true;
   else isAttention.value = false;

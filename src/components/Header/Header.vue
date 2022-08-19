@@ -13,7 +13,7 @@
         <li>侵权投诉</li>
       </ul>
       <ul id="right">
-        <li>
+        <li @click="goEditor">
           <el-icon>
             <i-ep-EditPen />
           </el-icon>
@@ -60,7 +60,7 @@
       <div class="search">
         <div class="search">
           <el-input v-model="keyword"></el-input>
-          <el-button type="primary">
+          <el-button type="primary" @click="goSearch">
             <el-icon style="vertical-align: middle">
               <i-ep-search />
             </el-icon>
@@ -154,8 +154,10 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import Api from "../../Api";
 import emitter from "../../utils/mitt";
 import Cookies from "js-cookie";
+import { useRouter } from "vue-router";
 
 const $myemit = defineEmits(["openLogin"]);
+const router = useRouter();
 
 let userInfo = reactive({
   userCount: "",
@@ -170,6 +172,10 @@ let isShow = ref(true);
 let isLogin = userInfo.userCount ? ref(true) : ref(false);
 let keyword = ref("");
 
+function goSearch() {
+  // 去搜索
+  emitter.emit("toSearch", keyword.value);
+}
 // 登录
 function login() {
   $myemit("openLogin");
@@ -218,6 +224,9 @@ function toggleHeader(show: boolean) {
   isShow.value = show;
 }
 
+function goEditor() {
+  router.push("/editorPage");
+}
 onMounted(() => {
   // 刷新Header数据
   emitter.on("refreshHeader", () => {
