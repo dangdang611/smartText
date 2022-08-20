@@ -1,6 +1,6 @@
 import { base } from "./base";
 import Request from "../utils/request";
-import qs from "qs";
+import * as qs from "qs";
 
 export default class FailArticle {
   static article = new Request({
