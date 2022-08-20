@@ -241,7 +241,7 @@ async function sendSend() {
   bottom: 0;
   right: 0;
   background-color: rgba(0, 0, 0, 0.2);
-  z-index: 100;
+  z-index: 2000;
 }
 .formbg {
   position: relative;

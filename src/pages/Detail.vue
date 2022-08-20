@@ -34,7 +34,7 @@
         <span>{{ data.info.likeNum }}</span>
         <el-divider />
       </li>
-      <li @click="isComment = !isComment">
+      <li @click="goComment">
         <el-icon>
           <i-ep-ChatDotRound />
         </el-icon>
@@ -131,6 +131,7 @@ let isLike = ref(false);
 let isComment = ref(false);
 let isCollect = ref(false);
 let isAttention = ref(false);
+let isLogin = ref(false);
 
 const route = useRoute();
 let path = route.query.articleId as string;
@@ -205,41 +206,54 @@ async function getAuthorInfo() {
 }
 
 async function getLike() {
-  isLike.value = !isLike.value;
-  let result = await Api.article.getLike(
-    path,
-    JSON.parse(localStorage.getItem("user_info") || "{}").userId,
-    Number(isLike.value)
-  );
-  if (result.code == 200) {
-    // 刷新数据,获取文章信息
-    getDetail();
+  if (isLogin.value) {
+    isLike.value = !isLike.value;
+    let result = await Api.article.getLike(
+      path,
+      JSON.parse(localStorage.getItem("user_info") || "{}").userId,
+      Number(isLike.value)
+    );
+    if (result.code == 200) {
+      // 刷新数据,获取文章信息
+      getDetail();
+    }
+  } else {
+    ElMessage({
+      type: "warning",
+      message: "请先登录",
+    });
   }
 }
 
 async function attention() {
-  if (isAttention.value) {
-    let result = await Api.attention.delAttention(
-      JSON.parse(localStorage.getItem("user_info") || "{}").userId,
-      data.author.id
-    );
+  if (isLogin.value) {
+    if (isAttention.value) {
+      let result = await Api.attention.delAttention(
+        JSON.parse(localStorage.getItem("user_info") || "{}").userId,
+        data.author.id
+      );
 
-    ElMessage({
-      type: result.data ? "success" : "error",
-      message: result.data ? "取消关注" : "取消关注失败",
-    });
+      ElMessage({
+        type: result.data ? "success" : "error",
+        message: result.data ? "取消关注" : "取消关注失败",
+      });
+    } else {
+      let result = await Api.attention.setAttention(
+        JSON.parse(localStorage.getItem("user_info") || "{}").userId,
+        data.author.id
+      );
+
+      ElMessage({
+        type: result.code == 200 ? "success" : "error",
+        message: result.code == 200 ? "关注成功" : "关注失败",
+      });
+    }
   } else {
-    let result = await Api.attention.setAttention(
-      JSON.parse(localStorage.getItem("user_info") || "{}").userId,
-      data.author.id
-    );
-
     ElMessage({
-      type: result.code == 200 ? "success" : "error",
-      message: result.code == 200 ? "关注成功" : "关注失败",
+      type: "warning",
+      message: "请先登录",
     });
   }
-
   //刷新页面
   getDetail();
 }
@@ -252,9 +266,20 @@ async function getLikeStatus() {
   );
   isLike.value = res.data;
 }
+
+function goComment() {
+  if (isLogin.value) isComment.value = !isComment.value;
+  else
+    ElMessage({
+      type: "warning",
+      message: "请先登录",
+    });
+}
 onMounted(() => {
+  isLogin.value = localStorage.getItem("user_info") ? true : false;
   //获取文章详细信息
   getDetail();
+  //获取点赞状态
   getLikeStatus();
   Api.article.addShowNum(path);
 });

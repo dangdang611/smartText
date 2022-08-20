@@ -261,7 +261,7 @@ onUnmounted(() => {
     display: block;
     width: 104px;
     height: 38px;
-    background: url("./images/logo.png") repeat;
+    background: url("@/assets/images/logo.png") repeat;
     background-size: 100% 100%;
     font-size: 0;
   }
@@ -294,7 +294,7 @@ onUnmounted(() => {
   color: #000;
   background: #ffff;
   .logo a {
-    background: url("./images/logo2.png") repeat;
+    background: url("@/assets/images/logo2.png") repeat;
     background-size: 100% 100%;
   }
 }

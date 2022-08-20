@@ -147,7 +147,7 @@ function resetForm(formName: FormInstance | undefined) {
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.2);
-  z-index: 100;
+  z-index: 2000;
 }
 .formbg {
   position: relative;
