@@ -58,7 +58,7 @@ export default {
 
     async function getCountUser() {
       const result = await Api.user.getUserCount(
-        JSON.parse(localStorage.getItem("use  r_info") || "{}").userId
+        JSON.parse(localStorage.getItem("user_info") || "{}").userId
       );
       if (result.code === 200) {
         ({
