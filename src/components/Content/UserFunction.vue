@@ -35,8 +35,10 @@
 
 <script lang="ts">
 import { ElMessage } from "element-plus";
+import { emit } from "process";
 import { useRouter, useRoute } from "vue-router";
 import Api from "../../Api";
+import emitter from "../../utils/mitt";
 
 export default {
   setup() {
@@ -66,13 +68,24 @@ export default {
           fansNum: data.fansNum,
           attentionNum: data.attentionNum,
         } = result.data);
+      } else {
+        data.likeNum = 0;
+        data.attentionNum = 0;
+        data.fansNum = 0;
       }
     }
 
     onMounted(() => {
       getCountUser();
+
+      emitter.on("refreshUserFunction", () => {
+        getCountUser();
+      });
     });
 
+    onUnmounted(() => {
+      emitter.off("refreshUserFunction");
+    });
     return {
       data,
       goEditor,

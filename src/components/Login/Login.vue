@@ -111,7 +111,12 @@ function submitForm(formName: FormInstance | undefined) {
         Cookies.set("smartToken", result.data.accessToken, { expires: 1 });
 
         // 刷新Header
-        emitter.emit("refreshHeader", "./images/logo2.png");
+        emitter.emit("refreshHeader");
+
+        //刷新content
+        emitter.emit("refreshContent");
+        //刷新UserFunction
+        emitter.emit("refreshUserFunction");
 
         // 关闭Login组件
         close();

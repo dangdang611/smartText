@@ -115,6 +115,9 @@ onMounted(() => {
     NewMessage.value = newList;
   });
 
+  emitter.on("refreshContent", (id) => {
+    toggle(currentPath.value);
+  });
   // 滚动加载
   window.onscroll = () => {
     //变量scrollTop是已经滚动上去的距离
@@ -163,6 +166,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   emitter.off("delListInfo");
+  emitter.off("refreshContent");
 });
 </script>
 

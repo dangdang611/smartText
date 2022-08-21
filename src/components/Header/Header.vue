@@ -202,6 +202,12 @@ function loginOut() {
       localStorage.removeItem("user_info");
 
       isLogin.value = false;
+
+      //刷新Content
+      emitter.emit("refreshContent");
+
+      //刷新UserFunction
+      emitter.emit("refreshUserFunction");
     } else {
       ElMessage({
         type: "warning",
