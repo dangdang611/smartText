@@ -16,11 +16,9 @@ export default class Like {
       })
       .then(
         (value) => {
-          console.log(value);
           return value;
         },
         (reason) => {
-          console.log(reason);
           return reason;
         }
       );

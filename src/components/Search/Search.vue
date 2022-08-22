@@ -12,7 +12,6 @@
     <div class="searchBox">
       <div class="description"></div>
       <div class="search">
-        <!-- <el-input v-model="input"></el-input> -->
         <el-autocomplete
           v-model="state"
           :fetch-suggestions="querySearchAsync"
@@ -20,6 +19,7 @@
           placeholder="请输入资讯标题"
           value-key="title"
           @select="handleSelect"
+          @keyup.enter="handleSelect"
         />
         <el-button type="primary" @click="handleSelect">
           <el-icon style="vertical-align: middle">

@@ -32,7 +32,7 @@ let key = reactive({
 });
 
 onMounted(() => {
-  emitter.on("toSearch", (keyword) => {
+  emitter.on("goSearch", (keyword) => {
     if (keyword == "") {
       isSearch.value = false;
     } else {
@@ -43,7 +43,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  emitter.off("toSearch");
+  emitter.off("goSearch");
 });
 </script>
 

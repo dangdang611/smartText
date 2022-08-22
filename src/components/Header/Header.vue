@@ -59,7 +59,7 @@
       </ul>
       <div class="search">
         <div class="search">
-          <el-input v-model="keyword"></el-input>
+          <el-input v-model="keyword" @keyup.enter="goSearch"></el-input>
           <el-button type="primary" @click="goSearch">
             <el-icon style="vertical-align: middle">
               <i-ep-search />

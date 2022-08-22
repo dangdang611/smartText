@@ -18,11 +18,9 @@ export default class Article {
       })
       .then(
         (value) => {
-          console.log(value);
           return value;
         },
         (reason) => {
-          console.log(reason);
           return reason;
         }
       );
@@ -47,7 +45,6 @@ export default class Article {
       })
       .then(
         (value) => {
-          console.log(value);
           return value;
         },
         (reason) => {

@@ -18,11 +18,9 @@ export default class CheckingArticle {
       })
       .then(
         (value) => {
-          console.log(value);
           return value;
         },
         (reason) => {
-          console.log(reason);
           return reason;
         }
       );
@@ -40,11 +38,9 @@ export default class CheckingArticle {
       })
       .then(
         (value) => {
-          console.log(value);
           return value;
         },
         (reason) => {
-          console.log(reason);
           return reason;
         }
       );

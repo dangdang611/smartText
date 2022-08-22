@@ -14,10 +14,8 @@
 </template>
 
 <script setup lang="ts">
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-import Api from "./Api";
 import Header from "./components/Header/Header.vue";
+import emitter from "./utils/mitt";
 
 let isLogin = ref(false);
 
@@ -38,6 +36,16 @@ function closeRegister() {
 function openRegister() {
   isRegister.value = true;
 }
+
+onMounted(() => {
+  emitter.on("toSearch", (keyword) => {
+    emitter.emit("goSearch", keyword);
+  });
+});
+
+onUnmounted(() => {
+  emitter.off("toSearch");
+});
 </script>
 
 <style lang="scss">

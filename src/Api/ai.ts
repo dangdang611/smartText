@@ -21,8 +21,6 @@ export default class AIHttp {
       .then(
         (value) => {
           // titles
-          console.log("donsadasdasdasd}}}");
-          console.log(value);
           return this.loadData(value);
         },
         (reason) => {
@@ -43,7 +41,6 @@ export default class AIHttp {
     fData["data"]["titles"].push(inData["title"]);
     // @ts-ignore
     fData["data"]["digests"] = inData["overview"];
-    console.log(fData);
     return fData;
   }
   static loadContent(content: string) {
