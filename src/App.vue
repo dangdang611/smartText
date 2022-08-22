@@ -39,6 +39,7 @@ function openRegister() {
 
 onMounted(() => {
   emitter.on("toSearch", (keyword) => {
+    //标题栏搜索有bug
     emitter.emit("goSearch", keyword);
   });
 });
