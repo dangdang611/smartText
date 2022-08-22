@@ -80,7 +80,6 @@
 <script lang="ts" setup>
 import { ElMessage, ElMessageBox, FormInstance } from "element-plus";
 import Api from "../../Api";
-// import { defineEmits } from "vue";
 
 //  使用defineEmits创建名称，接受一个数组
 let $myemit = defineEmits(["closeRegister", "openLogin"]);

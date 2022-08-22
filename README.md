@@ -1,16 +1,85 @@
-# Vue 3 + TypeScript + Vite
+# 智能资讯平台
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+**在线地址**：[SPD-智能资讯 (tcloudbase.com)](http://smarttext-7gdnmt748ea147ba-1313352825.ap-shanghai.app.tcloudbase.com/#/)
 
-## Recommended IDE Setup
+**注意**：不要使用 http 访问，因为服务器没有设置 SSL 证书
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar)
+部分效果截图：![image-20220822100916861](C:\Users\31804\AppData\Roaming\Typora\typora-user-images\image-20220822100916861.png)
 
-## Type Support For `.vue` Imports in TS
+![image-20220822100953199](C:\Users\31804\AppData\Roaming\Typora\typora-user-images\image-20220822100953199.png)
 
-Since TypeScript cannot handle type information for `.vue` imports, they are shimmed to be a generic Vue component type by default. In most cases this is fine if you don't really care about component prop types outside of templates. However, if you wish to get actual prop types in `.vue` imports (for example to get props validation when using manual `h(...)` calls), you can enable Volar's Take Over mode by following these steps:
+![image-20220822101021413](C:\Users\31804\AppData\Roaming\Typora\typora-user-images\image-20220822101021413.png)
 
-1. Run `Extensions: Show Built-in Extensions` from VS Code's command palette, look for `TypeScript and JavaScript Language Features`, then right click and select `Disable (Workspace)`. By default, Take Over mode will enable itself if the default TypeScript extension is disabled.
-2. Reload the VS Code window by running `Developer: Reload Window` from the command palette.
+## 涉及技术
 
-You can learn more about Take Over mode [here](https://github.com/johnsoncodehk/volar/discussions/471).
+### 前端：
+
+- 框架：Vue3
+- UI：Element-plus
+
+* 语言：TypeScript
+
+- 打包工具：Vite
+- 其他：
+  - 富文本编辑器：Mavon-Editor next
+  - 路由：Vue-Router
+  - 图表可视化：Echarts
+
+### 后端：
+
+- 框架：Midway
+
+- 环境：nodeJS
+
+- 缓存：Redis
+
+- 数据库：MySQL
+
+**注意**：后端在另外一个库中[dangdang611/smartText-Midway: 智能资讯平台的 Node 端（Midway） (github.com)](https://github.com/dangdang611/smartText-Midway)
+
+### 算法：
+
+- 语言：Python（不是很成熟）
+
+
+
+### 功能点：
+
+* 资讯推送
+
+* 资讯发布、编辑
+
+* 智能标题、摘要生成
+
+* 登录/注册/注销
+
+* 评论
+
+* 点赞
+
+* 关注
+
+* 数据可视化
+
+* 修改信息
+
+* 审核文章（管理端权限）
+
+* ........
+
+  
+
+### 本地运行：
+
+前后端一样：
+
+`npm install` 安装依赖
+
+`npm run dev ` 运行
+
+`npm run build` 打包
+
+### 提示：
+
+* 项目后台功能禁用部分，尚未开发完成
+* 注册部分，利用手机发送验证码接口没有部署上服务器，验证码随便填一个就行

@@ -203,11 +203,6 @@ onUnmounted(() => {
 
     .content {
       padding: 20px 30px;
-      .tips {
-        margin-top: 50px;
-        text-align: center;
-        color: #999;
-      }
     }
   }
 

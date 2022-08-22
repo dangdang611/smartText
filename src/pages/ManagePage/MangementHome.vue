@@ -300,7 +300,6 @@ const getUserData = async () => {
 
   //获取用户相关的统计数据
   let result = await Api.user.getUserCount(userInfo.userId);
-  console.log(result);
   if (result.code === 200) {
     ({
       fansNum: userInfo.fansNum,

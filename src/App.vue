@@ -86,4 +86,10 @@ function openRegister() {
     transform: translateY(0px);
   }
 }
+
+.tips {
+  margin-top: 50px;
+  text-align: center;
+  color: #999;
+}
 </style>

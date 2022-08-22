@@ -44,16 +44,16 @@
               :route="{ path: '/editorManage/commentManage' }"
               >评论管理</el-menu-item
             >
-            <el-menu-item index="3-3">专栏管理</el-menu-item>
+            <el-menu-item index="3-3" disabled>专栏管理</el-menu-item>
           </el-sub-menu>
           <el-sub-menu index="4">
             <template #title>
               <el-icon><i-ep-DataLine /></el-icon>
               <span>数据</span>
             </template>
-            <el-menu-item index="4-1">作品数据</el-menu-item>
-            <el-menu-item index="4-2">粉丝数据</el-menu-item>
-            <el-menu-item index="4-3">收益数据</el-menu-item>
+            <el-menu-item index="4-1" disabled>作品数据</el-menu-item>
+            <el-menu-item index="4-2" disabled>粉丝数据</el-menu-item>
+            <el-menu-item index="4-3" disabled>收益数据</el-menu-item>
           </el-sub-menu>
           <el-menu-item
             index="5"
@@ -72,29 +72,12 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  Document,
-  Menu as IconMenu,
-  Location,
-  Setting,
-} from "@element-plus/icons-vue";
-import { MenuItemClicked } from "element-plus";
-import { NavigationFailure } from "vue-router";
-
 const handleOpen = (key: string, keyPath: string[]) => {
   console.log(key, keyPath);
 };
 const handleClose = (key: string, keyPath: string[]) => {
   console.log(key, keyPath);
 };
-// const handleSelect = (
-//   key: string,
-//   keyPath: string[],
-//   item: MenuItemClicked,
-//   routerResult?: Promise<void | NavigationFailure> | undefined
-// ) => {
-//   console.log(key, keyPath, routerResult);
-// };
 </script>
 
 <style lang="scss" scoped>

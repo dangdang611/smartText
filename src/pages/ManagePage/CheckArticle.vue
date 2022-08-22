@@ -22,6 +22,7 @@
         @fail="failArticle"
         @look="lookDetail"
       />
+      <div class="tips" v-show="!currentData.length">暂时没有</div>
     </template>
   </ManageSlot>
 </template>
@@ -29,7 +30,6 @@
 <script lang="ts" setup>
 // 可以不import
 import ManageSlot from "../../components/Management/ManageSlot.vue";
-import ArticleItem from "../../components/Management/ArticleItem.vue";
 import Api from "../../Api";
 import { useRouter } from "vue-router";
 import emitter from "../../utils/mitt";

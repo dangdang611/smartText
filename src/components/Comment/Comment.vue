@@ -41,7 +41,6 @@
 </template>
 
 <script lang="ts" setup>
-import { ElMessage } from "element-plus";
 import { useRoute } from "vue-router";
 import Api from "../../Api";
 interface Comment {

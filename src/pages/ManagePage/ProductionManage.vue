@@ -22,6 +22,7 @@
         @del="delProduction"
         @look="lookDetail"
       />
+      <div class="tips" v-show="!currentData.length">暂时没有</div>
     </template>
   </ManageSlot>
 </template>

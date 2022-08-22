@@ -18,6 +18,7 @@
         :comment="item"
         @del="deleteComment"
       />
+      <div class="tips" v-show="!data.length">暂时没有</div>
     </template>
   </ManageSlot>
 </template>
